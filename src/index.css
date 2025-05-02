@@ -1,0 +1,107 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 210 20% 18%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 210 20% 18%;
+
+  --primary: 173 49% 39%;
+  --primary-foreground: 210 40% 98%;
+
+  --secondary: 16 84% 61%;
+  --secondary-foreground: 210 40% 98%;
+
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+
+  --accent: 39 73% 60%;
+  --accent-foreground: 210 20% 18%;
+
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 173 49% 39%;
+
+  --radius: 0.5rem;
+
+  /* Sidebar colors */
+  --sidebar-background: 210 33% 24%;
+  --sidebar-foreground: 0 0% 98%;
+  --sidebar-primary: 173 49% 39%;
+  --sidebar-primary-foreground: 0 0% 98%;
+  --sidebar-accent: 39 73% 60%;
+  --sidebar-accent-foreground: 210 20% 18%;
+  --sidebar-border: 210 29% 29%;
+  --sidebar-ring: 173 49% 39%;
+}
+
+/* Dark Mode */
+.dark {
+  --background: 210 33% 24%;
+  --foreground: 210 40% 98%;
+
+  --card: 210 33% 24%;
+  --card-foreground: 210 40% 98%;
+
+  --primary: 173 49% 39%;
+  --primary-foreground: 210 40% 98%;
+
+  --muted: 217.2 32.6% 17.5%;
+  --muted-foreground: 215 20.2% 65.1%;
+
+  --accent: 39 73% 60%;
+  --accent-foreground: 210 33% 24%;
+}
+
+* {
+  @apply border-border;
+}
+
+body {
+  @apply bg-background text-foreground;
+  font-family: 'Inter', sans-serif;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-muted rounded-lg;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-primary rounded-lg;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-primary/80;
+}
+
+@layer components {
+  /* Journal Card */
+  .journal-card {
+    @apply relative overflow-hidden rounded-lg border border-border bg-card text-card-foreground shadow-sm transition-all hover:shadow-md;
+  }
+
+  /* Map Container */
+  .map-container {
+    @apply h-96 w-full rounded-lg border border-border;
+  }
+
+  /* Avatar Ring */
+  .avatar-ring {
+    @apply ring-2 ring-primary ring-offset-2 ring-offset-background;
+  }
+
+  /* Tag Pill */
+  .tag-pill {
+    @apply inline-flex items-center rounded-full border border-current px-2.5 py-0.5 text-xs font-semibold transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
+  }
+}

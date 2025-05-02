@@ -1,5 +1,7 @@
+// mockData.js
 
-const mockCurrentUser = {
+// Mock data for the current user
+export const mockCurrentUser = {
   id: "1",
   name: "Alex Johnson",
   username: "alexjourneys",
@@ -13,7 +15,8 @@ const mockCurrentUser = {
   interests: ["Photography", "Hiking", "Food", "Culture"]
 };
 
-const mockTravelTips = [
+
+export const mockTravelTips = [
   {
     id: "1",
     title: "Essential Packing Tips",
@@ -55,32 +58,62 @@ const mockJournalEntries = [
   }
 ];
 
-// Example usage in React components
+// User profile card in plain JS
+function createUserProfileCard(user) {
+  const container = document.createElement("div");
 
-// Displaying the current user's profile
-function UserProfileCard() {
-  const { name, username, avatar, bio, location, placesVisited, followers } = mockCurrentUser;
+  const img = document.createElement("img");
+  img.src = user.avatar;
+  img.alt = `${user.name}'s avatar`;
 
-  return (
-    <div>
-      <img src={avatar} alt={`${name}'s avatar`} />
-      <h2>{name} (@{username})</h2>
-      <p>{bio}</p>
-      <p>{location}</p>
-      <p>Places Visited: {placesVisited}</p>
-      <p>Followers: {followers}</p>
-    </div>
-  );
+  const name = document.createElement("h2");
+  name.textContent = `${user.name} (@${user.username})`;
+
+  const bio = document.createElement("p");
+  bio.textContent = user.bio;
+
+  const location = document.createElement("p");
+  location.textContent = user.location;
+
+  const visited = document.createElement("p");
+  visited.textContent = `Places Visited: ${user.placesVisited}`;
+
+  const followers = document.createElement("p");
+  followers.textContent = `Followers: ${user.followers}`;
+
+  container.append(img, name, bio, location, visited, followers);
+  return container;
 }
 
-// Displaying a travel tip
-function TravelTipCard({ tip }) {
-  return (
-    <div>
-      <h3>{tip.title}</h3>
-      <p>{tip.content}</p>
-      <p>Category: {tip.category}</p>
-      <p>Likes: {tip.likes}</p>
-    </div>
-  );
+// Travel tip card in plain JS
+function createTravelTipCard(tip) {
+  const card = document.createElement("div");
+
+  const title = document.createElement("h3");
+  title.textContent = tip.title;
+
+  const content = document.createElement("p");
+  content.textContent = tip.content;
+
+  const category = document.createElement("p");
+  category.textContent = `Category: ${tip.category}`;
+
+  const likes = document.createElement("p");
+  likes.textContent = `Likes: ${tip.likes}`;
+
+  card.append(title, content, category, likes);
+  return card;
 }
+
+// Render to page
+document.addEventListener("DOMContentLoaded", () => {
+  const root = document.getElementById("root");
+
+  const profileCard = createUserProfileCard(mockCurrentUser);
+  root.appendChild(profileCard);
+
+  mockTravelTips.forEach((tip) => {
+    const tipCard = createTravelTipCard(tip);
+    root.appendChild(tipCard);
+  });
+});

@@ -1,22 +1,21 @@
 
-import { createContext, useContext, useState, ReactNode } from 'react';
-import { UserProfile, mockCurrentUser } from '@/lib/mockData';
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+import { createContext, useContext, useState } from 'react';
+import { mockCurrentUser } from '@/lib/mockData.js'; 
+const AuthContext = createContext(undefined);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState<UserProfile | null>(mockCurrentUser);
+  const [user, setUser] = useState(mockCurrentUser); 
 
   const login = async (email, password) => {
-    setUser(mockCurrentUser); // Mock login functionality
+    setUser(mockCurrentUser); // Simulate login by setting mock user
   };
 
   const logout = async () => {
-    setUser(null); // Mock logout functionality
+    setUser(null); // Simulate logout by setting user to null
   };
 
   const register = async (email, password, name) => {
-    setUser(mockCurrentUser); // Mock registration functionality
+    setUser(mockCurrentUser); // Simulate registration by setting mock user
   };
 
   return (
