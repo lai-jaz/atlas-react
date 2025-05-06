@@ -1,16 +1,33 @@
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin } from "lucide-react";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUser, loginUser } from "../store/authSlice";
+import { useToast } from "@/components/ui/use-toast";
 
 const LoginPage = () => {
-  const handleSubmit = (e) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { isAuthenticated, error } = useSelector((state) => state.auth);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const { toast } = useToast();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    console.log("Login attempt"); // Handle Login Logic
+    const result = await dispatch(loginUser({ email, password }));
+    if (result.meta.requestStatus === 'fulfilled') {
+      await dispatch(fetchUser());
+      toast({
+        title: "Successfully logged in",
+      });
+      navigate('/profile');
+    }
   };
 
   return (
@@ -34,7 +51,7 @@ const LoginPage = () => {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="hello@example.com" required />
+                <Input id="email" type="email" placeholder="hello@example.com" onChange={(e) => setEmail(e.target.value)} required />
               </div>
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
@@ -43,7 +60,7 @@ const LoginPage = () => {
                     Forgot password?
                   </Link>
                 </div>
-                <Input id="password" type="password" placeholder="••••••••" required />
+                <Input id="password" type="password" placeholder="••••••••" onChange={(e) => setPassword(e.target.value)} required />
               </div>
             </CardContent>
             <CardFooter className="flex flex-col">

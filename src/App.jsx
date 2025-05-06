@@ -12,29 +12,30 @@ import RoammatesPage from "./pages/RoammatesPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import NotFound from "./pages/NotFound";
+import ProtectedRoute from "./components/prot-route/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <AuthProvider>
       <TooltipProvider>
         <Toaster />
         <Sonner />
         <BrowserRouter>
+        <AuthProvider>
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/map" element={<MapPage />} />
-            <Route path="/journal" element={<JournalPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/roammates" element={<RoammatesPage />} />
+            <Route path="/map" element={<ProtectedRoute><MapPage /></ProtectedRoute>} />
+            <Route path="/journal" element={<ProtectedRoute><JournalPage /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+            <Route path="/roammates" element={<ProtectedRoute><RoammatesPage /></ProtectedRoute>} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
+        </AuthProvider>
         </BrowserRouter>
       </TooltipProvider>
-    </AuthProvider>
   </QueryClientProvider>
 
 );

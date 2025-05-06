@@ -1,6 +1,7 @@
 
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import {
   Menu,
@@ -20,10 +21,20 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { SidebarTrigger } from '@/components/ui/sidebar';
+import { logout } from '../../store/authSlice';
 
 const Navbar = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const isLoggedIn = false; // Replace with actual auth state
+  const { user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const isLoggedIn = !!user;
+
+  const handleLogout = () => {
+    dispatch(logout());
+    localStorage.removeItem('authToken');
+    navigate('/');
+  };
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -89,7 +100,7 @@ const Navbar = () => {
                   <Link to="/settings">Settings</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={handleLogout}>
                   Log Out
                 </DropdownMenuItem>
               </DropdownMenuContent>

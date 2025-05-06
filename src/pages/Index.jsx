@@ -5,10 +5,12 @@ import MainLayout from "../components/layouts/MainLayout";
 import JournalGrid from "../components/journal/JournalGrid";
 import DailyTip from "../components/travel/DailyTip";
 import { motion } from "framer-motion";
-import { mockCurrentUser, mockTravelTips } from "../lib/mockData.js";
+import { mockTravelTips } from "../lib/mockData.js";
+import { useSelector } from "react-redux";
 
 const Index = () => {
-  const isLoggedIn = true; // Mock authenticated state
+  const { user } = useSelector((state) => state.auth);
+  const isLoggedIn = !!user;
 
   const features = [
     {
@@ -37,22 +39,19 @@ const Index = () => {
     return (
       <MainLayout>
         <div className="container py-6 space-y-8">
-          {/* Welcome Section */}
+          {/*---------------------WELCOME---------------------- */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-gradient-to-br from-atlas-navy/10 to-atlas-teal/5 p-6 rounded-xl">
             <div>
               <h1 className="text-3xl font-bold tracking-tight">
-                Welcome back, {mockCurrentUser.name}! 👋
+                Welcome back, {user.name}! 👋
               </h1>
-              <p className="text-muted-foreground mt-2">
-                {mockCurrentUser.location}
-              </p>
             </div>
             <Button asChild>
               <Link to="/journal/new">Create New Memory</Link>
             </Button>
           </div>
 
-          {/* Daily Tip Section */}
+          {/*--------------DAILY TIP--------------------*/}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-2">
               <h2 className="text-2xl font-semibold mb-4">Your Travel Feed</h2>
@@ -72,7 +71,7 @@ const Index = () => {
 
   return (
     <MainLayout>
-      {/* Hero Section with parallax effect */}
+      {/*---------------------------HERO SECTION----------------*/}
       <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-gradient-to-b from-atlas-navy/90 to-atlas-teal/90">
         <div className="absolute inset-0 z-0">
           <img 
@@ -123,7 +122,7 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Features Section with hover effects */}
+      {/*-----------------FEATURES---------------------*/}
       <section className="container py-24 bg-gradient-to-b from-background to-muted/30">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-atlas-teal to-atlas-lightblue bg-clip-text text-transparent">

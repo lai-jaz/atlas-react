@@ -5,25 +5,19 @@ import JournalGrid from "@/components/journal/JournalGrid";
 import InteractiveMap from "@/components/map/InteractiveMap";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-
-const mockUser = {
-  name: "Alex Johnson",
-  username: "alexjourneys",
-  avatar: "/placeholder.svg",
-  bio: "Travel enthusiast and photographer. Exploring the world one city at a time.",
-  location: "San Francisco, CA",
-  joinedDate: new Date("2023-01-15"),
-  placesVisited: 27,
-  followers: 148,
-  following: 92,
-  travelInterests: ["Photography", "Hiking", "Street Food", "Architecture", "Cultural Experiences"]
-};
+import { useSelector } from "react-redux";
 
 const ProfilePage = () => {
+  const user = useSelector((state) => {return state.auth.user});
+
+  if (!user) 
+    return <div className="text-center mt-10"><h2 className="text-2xl font-bold">Loading...</h2></div>;
+
   return (
     <MainLayout>
       <div className="container py-6 space-y-6">
-        <ProfileCard user={mockUser} />
+
+        <ProfileCard user={user} />
         
         <Tabs defaultValue="journals" className="w-full">
           <TabsList className="mb-4">
