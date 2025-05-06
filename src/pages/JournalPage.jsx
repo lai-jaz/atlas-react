@@ -1,8 +1,15 @@
 import MainLayout from "../components/layouts/MainLayout";
 import JournalGrid from "../components/journal/JournalGrid";
 import { Button } from "../components/ui/button";
+import { useState } from "react";
+import JournalForm from "../components/journal/JournalForm";
 
 const JournalPage = () => {
+  const [isFormVisible,setIsFormVisible]=useState(false);
+  const toggleFormVisibility=()=>
+  {
+    setIsFormVisible(!isFormVisible);
+  };
   return (
     <MainLayout>
       <div className="container py-6 space-y-6">
@@ -13,10 +20,10 @@ const JournalPage = () => {
               Document and share your travel experiences
             </p>
           </div>
-          <Button>Create New Entry</Button>
+          <Button onClick={toggleFormVisibility}>{isFormVisible? "Cancel" : "Create New Entry"}</Button>
         </div>
-
-        <JournalGrid />
+{isFormVisible && <JournalForm/>}
+        {!isFormVisible && <JournalGrid />}
       </div>
     </MainLayout>
   );
