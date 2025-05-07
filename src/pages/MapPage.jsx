@@ -1,57 +1,62 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchLocations, addLocation } from "@/store/mapSlice";
 import MainLayout from "../components/layouts/MainLayout";
 import InteractiveMap from "../components/map/InteractiveMap";
 import { Button } from "../components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "../components/ui/dialog";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "../components/ui/dialog";
 
 const MapPage = () => {
-  
-  const [locations, setLocations] = useState([]);
+  const dispatch = useDispatch();
+
+  const { locations, loading } = useSelector((state) => state.map);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
-  
   useEffect(() => {
-    const savedLocations = localStorage.getItem("userLocations");
-    if (savedLocations) {
-      try {
-        setLocations(JSON.parse(savedLocations));
-      } catch (e) {
-        console.error("Error parsing saved locations:", e);
-      }
-    }
-  }, []);
+    dispatch(fetchLocations()); // Fetch user-specific pinned locations from backend
+  }, [dispatch]);
 
-  
-  useEffect(() => {
-    if (locations.length > 0) {
-      localStorage.setItem("userLocations", JSON.stringify(locations));
-    }
-  }, [locations]);
-
- 
   const handleAddLocation = (newLocation) => {
-    
-    const locationWithId = {
-      ...newLocation,
-      id: `loc_${Date.now()}`
-    };
-    
-    setLocations(prev => [...prev, locationWithId]);
+    console.log("Handling add location in MapPage:", newLocation);
+    dispatch(addLocation(newLocation)); // Add new location via backend
   };
 
-  
   const countCountries = () => {
     const countries = new Set();
-    locations.forEach(location => {
-      const locationParts = location.title.split(', ');
+    locations.forEach((location) => {
+      // Updated this to handle backend structure
+      const locationName = location.name || "";
+      const locationParts = locationName.split(", ");
       if (locationParts.length > 1) {
         countries.add(locationParts[locationParts.length - 1]);
       }
     });
     return countries.size;
   };
+
+  // Transform backend location data for the InteractiveMap component
+  const transformedLocations = locations.map(loc => ({
+    id: loc._id,
+    lat: loc.coordinates?.lat || 0,
+    lng: loc.coordinates?.lng || 0,
+    title: loc.name || "Untitled Location",
+    description: loc.description || "",
+    visitDate: loc.visitDate || new Date(loc.datePinned).toISOString().split("T")[0],
+    color: loc.color || "#2A9D8F"
+  }));
 
   return (
     <MainLayout>
@@ -74,15 +79,19 @@ const MapPage = () => {
           </TabsList>
 
           <TabsContent value="my-map">
-            <InteractiveMap 
-              locations={locations} 
+            <InteractiveMap
+              locations={transformedLocations}
               onAddLocation={handleAddLocation}
-              isLoading={isLoading}
+              isLoading={loading}
             />
             <div className="flex justify-between items-center mt-6">
               <div>
-                <p className="text-sm font-medium">Locations Visited: {locations.length}</p>
-                <p className="text-sm text-muted-foreground">Countries Visited: {countCountries()}</p>
+                <p className="text-sm font-medium">
+                  Locations Visited: {locations.length}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Countries Visited: {countCountries()}
+                </p>
               </div>
               <Button variant="outline">Download Map</Button>
             </div>
@@ -109,7 +118,6 @@ const MapPage = () => {
           </TabsContent>
         </Tabs>
 
-        {/* This dialog adds an alternative way to trigger adding a location */}
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogContent>
             <DialogHeader>
@@ -121,11 +129,15 @@ const MapPage = () => {
             <div className="py-4 space-y-4">
               <div className="border p-4 rounded-md">
                 <h4 className="font-medium mb-2">Option 1: Click on the map</h4>
-                <p className="text-sm text-muted-foreground">Click directly on the map to place a pin at the exact location</p>
+                <p className="text-sm text-muted-foreground">
+                  Click directly on the map to place a pin at the exact location
+                </p>
               </div>
               <div className="border p-4 rounded-md">
                 <h4 className="font-medium mb-2">Option 2: Search for a location</h4>
-                <p className="text-sm text-muted-foreground">Use the search function in map's "Search Mode" to find specific places</p>
+                <p className="text-sm text-muted-foreground">
+                  Use the search function in map's "Search Mode" to find specific places
+                </p>
               </div>
             </div>
             <DialogFooter>
