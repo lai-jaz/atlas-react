@@ -3,48 +3,22 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-const tips = [
-  {
-    title: "Pack Smart, Not Heavy",
-    content: "Roll your clothes instead of folding to save space and avoid wrinkles.",
-    category: "Packing",
-    tags: ["luggage", "clothing", "organization"],
-    likes: 12
-  },
-  {
-    title: "Offline Maps Are a Lifesaver",
-    content: "Download maps ahead of time so you're never lost, even without data.",
-    category: "Navigation",
-    tags: ["maps", "offline", "tech"],
-    likes: 24
-  },
-  {
-    title: "Learn Key Phrases",
-    content: "Knowing a few words in the local language can go a long way in connecting with locals.",
-    category: "Cultural Tips",
-    tags: ["language", "connection", "etiquette"],
-    likes: 30
-  },
-  {
-    title: "Stay Hydrated",
-    content: "Always carry a reusable water bottle, especially on long walks or hikes.",
-    category: "Health",
-    tags: ["water", "wellness", "eco-friendly"],
-    likes: 18
-  }
-];
-
-const getRandomTip = () => {
-  const index = Math.floor(Math.random() * tips.length);
-  return tips[index];
-};
+import { getRandomTip } from "@/api"; 
 
 const DailyTip = () => {
   const [tip, setTip] = useState(null);
 
   useEffect(() => {
-    setTip(getRandomTip());
+    const fetchTip = async () => {
+      try {
+        const data = await getRandomTip();
+        setTip(data);
+      } catch (error) {
+        console.error("Failed to fetch tip:", error);
+      }
+    };
+
+    fetchTip();
   }, []);
 
   if (!tip) return null;
