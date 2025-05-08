@@ -144,4 +144,16 @@ export const deleteLocation = async (id, token) => {
     }
     throw err;
   }
+  
+};
+
+//-----------------GET RANDOM DAILY TIP-----------------//
+export const getRandomTip = async () => {
+  try {
+    const res = await axios.get(`${API_URL}/tips/random`);
+    return res.data;
+  } catch (err) {
+    console.error("Error fetching random tip:", err);
+    throw err;
+  }
 };
