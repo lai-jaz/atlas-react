@@ -3,9 +3,15 @@ import { login, register, getUserData } from '@/api';
 
 const tokenKey = 'token';
 
+export const initAuth = createAsyncThunk('auth/init', async (_, { dispatch }) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    await dispatch(fetchUser());
+  }
+});
+
 export const fetchUser = createAsyncThunk('auth/fetchUser', async (_, { rejectWithValue }) => {
   const token = localStorage.getItem(tokenKey);
-  console.log('Token:', token);
   if (!token) return rejectWithValue('No token');
   try {
     return await getUserData(token);
@@ -57,7 +63,6 @@ const authSlice = createSlice({
       .addCase(fetchUser.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload;
-        console.log('User fetched:', state.user);
         state.isAuthenticated = true;
       })
       .addCase(fetchUser.rejected, (state) => {
@@ -67,7 +72,6 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.user = action.payload;
-        console.log('User logged in:', action.payload);
         state.isAuthenticated = true;
       })
       .addCase(registerUser.fulfilled, (state, action) => {
