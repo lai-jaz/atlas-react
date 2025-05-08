@@ -38,3 +38,122 @@ export const getUserData = async (token) => {
     throw error;
   }
 };
+//-----------------PINNED LOCATIONS-----------------//
+
+// GET all pinned locations
+export const getLocations = async (token) => {
+  console.log("API call - fetching locations with token");
+  if (!token) {
+    console.error("No token provided for getLocations");
+    throw new Error("Authentication required");
+  }
+  
+  try {
+    const res = await axios.get(`${API_URL}/locations`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    console.log("API response - locations:", res.data);
+    return res.data;
+  } catch (err) {
+    console.error("Error fetching locations:", err.response || err);
+    if (err.response) {
+      console.error("Response status:", err.response.status);
+      console.error("Response data:", err.response.data);
+    }
+    throw err;
+  }
+};
+
+// POST new pinned location
+export const createLocation = async (location, token) => {
+  console.log("API call - creating location:", location);
+  if (!token) {
+    console.error("No token provided for createLocation");
+    throw new Error("Authentication required");
+  }
+  
+  try {
+    const res = await axios.post(`${API_URL}/locations`, location, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    console.log("API response - location created:", res.status, res.data);
+    return res.data;
+  } catch (err) {
+    console.error("Error creating location:", err.response || err);
+    if (err.response) {
+      console.error("Response status:", err.response.status);
+      console.error("Response data:", err.response.data);
+    }
+    throw err;
+  }
+};
+
+// PUT (update) existing pinned location
+export const updateLocation = async (id, updatedData, token) => {
+  console.log("API call - updating location:", id, updatedData);
+  if (!token) {
+    console.error("No token provided for updateLocation");
+    throw new Error("Authentication required");
+  }
+  
+  try {
+    const res = await axios.put(`${API_URL}/locations/${id}`, updatedData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    console.log("API response - location updated:", res.status, res.data);
+    return res.data;
+  } catch (err) {
+    console.error("Error updating location:", err.response || err);
+    if (err.response) {
+      console.error("Response status:", err.response.status);
+      console.error("Response data:", err.response.data);
+    }
+    throw err;
+  }
+};
+
+// DELETE pinned location
+export const deleteLocation = async (id, token) => {
+  console.log("API call - deleting location:", id);
+  if (!token) {
+    console.error("No token provided for deleteLocation");
+    throw new Error("Authentication required");
+  }
+  
+  try {
+    const res = await axios.delete(`${API_URL}/locations/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    console.log("API response - location deleted:", res.status, res.data);
+    return res.data;
+  } catch (err) {
+    console.error("Error deleting location:", err.response || err);
+    if (err.response) {
+      console.error("Response status:", err.response.status);
+      console.error("Response data:", err.response.data);
+    }
+    throw err;
+  }
+  
+};
+
+//-----------------GET RANDOM DAILY TIP-----------------//
+export const getRandomTip = async () => {
+  try {
+    const res = await axios.get(`${API_URL}/tips/random`);
+    return res.data;
+  } catch (err) {
+    console.error("Error fetching random tip:", err);
+    throw err;
+  }
+};

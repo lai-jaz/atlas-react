@@ -155,20 +155,30 @@ const InteractiveMap = ({ locations = [], onAddLocation, isLoading = false }) =>
   };
 
   const saveLocation = () => {
-    if (!newLocation || !formData.title) return;
+    if (!newLocation || !formData.title) {
+      console.log("Missing location data:", { newLocation, title: formData.title });
+      return;
+    }
     
+    // Restructure to match backend expectations
     const newLocationObject = {
-      lat: newLocation.lat,
-      lng: newLocation.lng,
-      title: formData.title,
+      name: formData.title, // Changed from title to name
       description: formData.description,
+      coordinates: { // Nested lat/lng in coordinates object
+        lat: newLocation.lat,
+        lng: newLocation.lng
+      },
       visitDate: formData.visitDate,
       color: formData.color
     };
     
+    console.log("Attempting to save location:", newLocationObject);
+    
     // Call the parent component's handler
     if (onAddLocation) {
       onAddLocation(newLocationObject);
+    } else {
+      console.error("onAddLocation is undefined or null");
     }
     
     // Reset form state
