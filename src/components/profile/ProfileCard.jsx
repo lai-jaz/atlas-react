@@ -23,10 +23,7 @@ const ProfileCard = ({ user }) => {
               <p className="text-sm text-muted-foreground">@{user.username}</p>
             )}
           </div>
-          <Button variant="outline" className="flex items-center gap-1">
-            <Users className="h-4 w-4 mr-1" />
-            Follow
-          </Button>
+          
         </div>
 
         <div className="mt-6 space-y-4">
@@ -54,20 +51,7 @@ const ProfileCard = ({ user }) => {
             )}
           </div>
 
-          <div className="flex gap-4">
-            <div className="text-center">
-              <p className="font-bold">{user.placesVisited || 0}</p>
-              <p className="text-xs text-muted-foreground">Places</p>
-            </div>
-            <div className="text-center">
-              <p className="font-bold">{user.followers || 0}</p>
-              <p className="text-xs text-muted-foreground">Followers</p>
-            </div>
-            <div className="text-center">
-              <p className="font-bold">{user.following || 0}</p>
-              <p className="text-xs text-muted-foreground">Following</p>
-            </div>
-          </div>
+          
 
           {user.travelInterests && user.travelInterests.length > 0 && (
             <div className="space-y-2">
