@@ -8,16 +8,7 @@ import { Badge } from '@/components/ui/badge';
 
 function JournalCard(props) {
   const {
-    id,
-    title,
-    excerpt,
-    location,
-    date,
-    imageUrl,
-    author,
-    likes,
-    comments,
-    tags
+    _id, title, excerpt, location, date, imageUrl, author, likes, comments, tags
   } = props;
 
   return (
@@ -34,19 +25,21 @@ function JournalCard(props) {
         )}
         <div className={`p-4 ${imageUrl ? '' : 'pt-0'}`}>
           <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center">
-              <Avatar className="h-6 w-6 mr-2">
-                <AvatarImage src={author.avatar || '/placeholder.svg'} />
-                <AvatarFallback>{author.name.charAt(0)}</AvatarFallback>
-              </Avatar>
-              <span className="text-sm font-medium">{author.name}</span>
-            </div>
-            <span className="text-xs text-muted-foreground">
-              {formatDistance(new Date(date), new Date(), { addSuffix: true })}
-            </span>
+          <div className="flex items-center">
+  <Avatar className="h-6 w-6 mr-2">
+    <AvatarImage src={author?.avatar || '/placeholder.svg'} />
+    <AvatarFallback>{author?.name?.charAt(0) || 'U'}</AvatarFallback>
+  </Avatar>
+  <span className="text-sm font-medium">{author?.name || 'Unknown'}</span>
+</div>
+
+<span className="text-xs text-muted-foreground">
+  {date ? formatDistance(new Date(date), new Date(), { addSuffix: true }) : 'Unknown date'}
+</span>
+
           </div>
 
-          <Link to={`/journal/${id}`}>
+          <Link to={`/journal/${_id}`}>
             <h3 className="font-bold text-lg mb-1 group-hover:text-primary transition-colors">
               {title}
             </h3>
@@ -60,12 +53,17 @@ function JournalCard(props) {
           </div>
 
           <div className="flex flex-wrap gap-1 mb-3">
-            {tags.map((tag) => (
-              <Badge key={tag} variant="outline" className="bg-muted/50 hover:bg-muted">
-                {tag}
-              </Badge>
-            ))}
-          </div>
+  {tags && Array.isArray(tags) ? (
+    tags.map((tag) => (
+      <Badge key={tag} variant="outline" className="bg-muted/50 hover:bg-muted">
+        {tag}
+      </Badge>
+    ))
+  ) : (
+    <p>No tags available</p>
+  )}
+</div>
+
 
           <div className="flex items-center justify-between mt-2 pt-2 border-t">
             <div className="flex items-center space-x-3">
@@ -79,7 +77,7 @@ function JournalCard(props) {
               </Button>
             </div>
             <Button variant="ghost" size="sm" asChild>
-              <Link to={`/journal/${id}`}>Read more</Link>
+              <Link to={`/journal/${_id}`}>Read more</Link>
             </Button>
           </div>
         </div>
