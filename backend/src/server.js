@@ -6,7 +6,7 @@ import authRoutes from "./routes/auth.js";
 import locationRoutes from "./routes/locations.js";
 import tipRoutes from './routes/tips.js';
 import roammateRoutes from './routes/roammates.js';
-import journalRoutes from "./routes/journals.js";dotenv.config();
+import journalRoutes from "./routes/journalRoutes.js";dotenv.config();
 const app = express();
 
 app.use(cors());
