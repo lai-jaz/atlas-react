@@ -38,6 +38,7 @@ export const getUserData = async (token) => {
     throw error;
   }
 };
+
 //-----------------PINNED LOCATIONS-----------------//
 
 // GET all pinned locations
@@ -234,4 +235,187 @@ export const getJournalById = async (id) => {
   }
 };
 
+//-----------------ROAMMATES (CONNECTIONS)-----------------//
+
+// Get all users (for testing)
+export const getAllUsers = async (token) => {
+  try {
+    if (!token) {
+      throw new Error("Authentication required");
+    }
+    
+    const res = await axios.get(`${API_URL}/roammates/all`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return res.data;
+  } catch (err) {
+    console.error("Error fetching all users:", err);
+    throw err;
+  }
+};
+
+// Search for users
+export const searchRoammates = async (query, searchType = null, token) => {
+  try {
+    if (!token) {
+      throw new Error("Authentication required");
+    }
+    
+    const params = { query };
+    if (searchType) {
+      params.searchType = searchType;
+    }
+    
+    const res = await axios.get(`${API_URL}/roammates/search`, {
+      params,
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return res.data;
+  } catch (err) {
+    console.error("Error searching for roammates:", err);
+    throw err;
+  }
+};
+
+// Get connected roammates
+export const getConnectedRoammates = async (token) => {
+  if (!token) {
+    throw new Error("Authentication required");
+  }
+  
+  try {
+    const res = await axios.get(`${API_URL}/roammates/connected`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    console.log("API response - connected roammates:", res.data);
+    return res.data;
+  } catch (err) {
+    console.error("Error fetching connected roammates:", err.response || err);
+    if (err.response?.status === 401) {
+      throw new Error("Authentication required");
+    }
+    throw err;
+  }
+};
+
+// Get pending connection requests
+export const getPendingRequests = async (token) => {
+  if (!token) {
+    throw new Error("Authentication required");
+  }
+  
+  try {
+    const res = await axios.get(`${API_URL}/roammates/pending`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    console.log("API response - pending requests:", res.data);
+    return res.data;
+  } catch (err) {
+    console.error("Error fetching pending requests:", err.response || err);
+    if (err.response?.status === 401) {
+      throw new Error("Authentication required");
+    }
+    throw err;
+  }
+};
+
+// Get roammate suggestions
+export const getRoammateSuggestions = async (token) => {
+  if (!token) {
+    throw new Error("Authentication required");
+  }
+  
+  try {
+    const res = await axios.get(`${API_URL}/roammates/suggestions`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    console.log("API response - roammate suggestions:", res.data);
+    return res.data;
+  } catch (err) {
+    console.error("Error fetching roammate suggestions:", err.response || err);
+    if (err.response?.status === 401) {
+      throw new Error("Authentication required");
+    }
+    throw err;
+  }
+};
+
+// Send connection request
+export const sendConnectionRequest = async (recipientId, token) => {
+  if (!token) {
+    throw new Error("Authentication required");
+  }
+  
+  try {
+    const res = await axios.post(`${API_URL}/roammates/request`, 
+      { recipientId },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    console.log("API response - connection request sent:", res.data);
+    return res.data;
+  } catch (err) {
+    console.error("Error sending connection request:", err.response || err);
+    if (err.response?.status === 401) {
+      throw new Error("Authentication required");
+    }
+    throw err;
+  }
+};
+
+// Respond to connection request
+export const respondToRequest = async (requestId, action, token) => {
+  if (!token) {
+    throw new Error("Authentication required");
+  }
+  
+  try {
+    const res = await axios.put(`${API_URL}/roammates/respond`, 
+      { requestId, action },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    console.log("API response - responded to request:", res.data);
+    return res.data;
+  } catch (err) {
+    console.error("Error responding to connection request:", err.response || err);
+    if (err.response?.status === 401) {
+      throw new Error("Authentication required");
+    }
+    throw err;
+  }
+};
+
+// Add this function to your API file
+export const removeConnectionById = async (connectionId, token) => {
+  try {
+    const res = await axios.delete(`${API_URL}/roammates/connection/${connectionId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return res.data;
+  } catch (err) {
+    console.error("Error removing connection:", err);
+    throw err;
+  }
+};
 
