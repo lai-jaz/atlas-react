@@ -1,16 +1,22 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 
 const userSchema = new mongoose.Schema({
   name: { type: String },
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true }, // hashed password
-  username: { type: String },
-  avatar: { type: String },
-  bio: { type: String },
-  followers: { type: Number, default: 0 },
-  following: { type: Number, default: 0 },
-  travelInterests: [{ type: String }],
+  password: { type: String, required: true },
+  profile: {
+    avatar: { type: String, default: "/placeholder.svg" },
+    bio: { type: String },
+    location: { type: String },
+    interests: [{ type: String }],
+    joinedDate: { type: Date, default: Date.now },
+    // Add these fields for tracking stats
+    locationsCount: { type: Number, default: 0 },
+    followersCount: { type: Number, default: 0 },
+    followingCount: { type: Number, default: 0 }
+  },
+  createdAt: { type: Date, default: Date.now }
 });
 
 userSchema.methods.comparePassword = function (password) {
