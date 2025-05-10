@@ -1,7 +1,7 @@
 import express from "express";
-import User from "../models/User.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import User from "../models/User.js";
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
@@ -29,53 +29,24 @@ router.patch("/update", async (req, res) => {
 });
 
 //-------------------------Update Account-------------------------//
-// router.patch("/account/update", async (req, res) => {
-//     const { email, currentPassword, newPassword } = req.body;
-
-//     try {
-//         const user = await User.findOne({email});
-//         if (!user) {
-//             return res.status(404).json({ error: "User not found" });
-//         }
-
-//         if (newPassword) {
-//             const isMatch = await bcrypt.compare(currentPassword, user.password);
-//             if (!isMatch) {
-//                 return res.status(400).json({ error: "Current password is incorrect" });
-//             }
-
-//             user.password = await bcrypt.hash(newPassword, 10);
-//         }
-
-//         if (email && email !== user.email) {
-//             user.email = email;
-//         }
-
-//         await user.save();
-//         res.status(200).json({ message: "Account updated successfully" });
-//     } catch (err) {
-//         console.error(err);
-//         res.status(500).json({ error: "Server error" });
-//     }
-// });
+// check this, bcrypt not working it's neither comparing nor hashing
 router.patch("/account/update", async (req, res) => {
-    const { email, currentPassword, newPassword } = req.body;
+    const { id, email, currentPassword, newPassword } = req.body;
 
     try {
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(404).json({ error: "User not found" });
-        }
+        const user = await User.findOne({_id : id});
 
-        // If user wants to change password
         if (newPassword) {
-            const isMatch = await user.comparePassword(currentPassword);
+            const isMatch = await bcrypt.compare(currentPassword, user.password);
             if (!isMatch) {
                 return res.status(400).json({ error: "Current password is incorrect" });
             }
 
-            // user.password = await bcrypt.hash(newPassword, 10);
-            user.password = newPassword;
+            user.password = await bcrypt.hash(newPassword, 10);
+        }
+
+        if (email && email !== user.email) {
+            user.email = email;
         }
 
         await user.save();

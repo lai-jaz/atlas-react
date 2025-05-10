@@ -5,6 +5,10 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 
 const ProfileCard = ({ user }) => {
+
+  const interestsArr = user.profile?.interests ? user.profile?.interests.split(',') : [];
+
+
   return (
     <Card className="overflow-hidden">
       <div className="h-32 bg-gradient-to-r from-atlas-teal to-atlas-lightblue" />
@@ -19,21 +23,31 @@ const ProfileCard = ({ user }) => {
         <div className="ml-36 pb-4 pt-3 flex justify-between">
           <div>
             <h2 className="text-2xl font-bold">{user.name}</h2>
-            {user.username && (
-              <p className="text-sm text-muted-foreground">@{user.username}</p>
-            )}
+
           </div>
           
         </div>
 
-        <div className="mt-6 space-y-4">
-          {user.bio && <p className="text-sm">{user.bio}</p>}
+        <div className="mt-1 space-y-4">
+          <p className="text-sm text-muted-foreground">
+              {user.profile?.bio} 
+            </p>
+
+            {interestsArr && interestsArr.length > 0 && (
+              <div className="flex flex-wrap gap-1 mt-2">
+                {interestsArr.map((interest) => (
+                  <Badge key={interest} variant="outline" className="bg-muted/50">
+                    {interest}
+                  </Badge>
+                ))}
+              </div>
+            )}
 
           <div className="flex flex-wrap gap-4">
-            {user.location && (
+            {user.profile?.location && (
               <div className="flex items-center text-sm">
                 <MapPin className="h-4 w-4 mr-1 text-atlas-teal" />
-                <span>{user.location}</span>
+                <span>{user.profile?.location}</span>
               </div>
             )}
 

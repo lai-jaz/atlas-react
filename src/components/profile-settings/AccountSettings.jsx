@@ -47,6 +47,7 @@ const AccountSettings = () => {
 
         try {
             const updateData = {
+                id : user._id,
                 email: accountData.email,
                 ...(accountData.newPassword && { password: accountData.newPassword }),
             };
