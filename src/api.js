@@ -39,6 +39,27 @@ export const getUserData = async (token) => {
   }
 };
 
+//-----------------UPDATE USER PROFILE-----------------//
+const updateProfile = async (formData) => {
+  const token = localStorage.getItem('authToken');
+  
+  const response = await fetch('/api/profile/update', {
+    method: 'PATCH',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(formData),
+  });
+
+  if (!response.ok) {
+        throw new Error('Profile update failed');
+  }
+
+  return await response.json();
+};
+
+
 //-----------------PINNED LOCATIONS-----------------//
 
 // GET all pinned locations

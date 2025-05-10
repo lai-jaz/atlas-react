@@ -6,7 +6,10 @@ import authRoutes from "./routes/auth.js";
 import locationRoutes from "./routes/locations.js";
 import tipRoutes from './routes/tips.js';
 import roammateRoutes from './routes/roammates.js';
-import journalRoutes from "./routes/journalRoutes.js";dotenv.config();
+import journalRoutes from "./routes/journalRoutes.js";
+import profileRoutes from "./routes/profile.js";
+
+dotenv.config();
 const app = express();
 
 app.use(cors());
@@ -16,6 +19,7 @@ app.use("/api/locations", locationRoutes);
 app.use('/api/tips', tipRoutes);
 app.use('/api/roammates', roammateRoutes);
 app.use('/api/journals', journalRoutes);
+app.use('/api/profile', profileRoutes);
 
 mongoose
 .connect(process.env.MONGO_URI)

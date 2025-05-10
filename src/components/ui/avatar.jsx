@@ -30,7 +30,7 @@ const AvatarImage = React.forwardRef(({ className, src, alt, ...props }, ref) =>
     )
   }
   
-  // Otherwise, generate a unique avatar based on the alt text (usually the user's name)
+  // Otherwise, generate a unique avatar based on the alt text
   // or a random string if alt is not provided
   const name = alt || Math.random().toString(36).substring(2, 8)
   

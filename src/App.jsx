@@ -3,7 +3,6 @@ import { Toaster as Sonner } from "./components/ui/sonner";
 import { TooltipProvider } from "./components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "./hooks/useAuth";
 import Index from "./pages/Index";
 import MapPage from "./pages/MapPage";
 import JournalPage from "./pages/JournalPage";
@@ -17,6 +16,7 @@ import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { initAuth } from "./store/authSlice";
 import JournalDetailPage from "./pages/JournalDetailPage";
+import SettingsPage from "./pages/SettingsPage";
 
 const queryClient = new QueryClient();
 
@@ -34,7 +34,6 @@ const App = () => {
         <Toaster />
         <Sonner />
         <BrowserRouter>
-        <AuthProvider>
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/map" element={<ProtectedRoute><MapPage /></ProtectedRoute>} />
@@ -43,10 +42,10 @@ const App = () => {
             <Route path="/roammates" element={<ProtectedRoute><RoammatesPage /></ProtectedRoute>} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
             <Route path="/journal/:journalId" element={<ProtectedRoute><JournalDetailPage /></ProtectedRoute>}/>
             <Route path="*" element={<NotFound />} />
           </Routes>
-        </AuthProvider>
         </BrowserRouter>
       </TooltipProvider>
   </QueryClientProvider>

@@ -23,5 +23,4 @@ userSchema.methods.comparePassword = function (password) {
     return bcrypt.compare(password, this.password);
   };
 
-// Export the model only if it hasn't been compiled yet
 export default mongoose.models.User || mongoose.model('User', userSchema);

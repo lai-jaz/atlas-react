@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { createJournal } from '../../api';
 import { useSelector } from 'react-redux';
+import { toast } from 'sonner';
 
 const JournalForm = () => {
   const user = useSelector((state) => state.auth.user);  // Get user from Redux store
@@ -56,8 +57,19 @@ const JournalForm = () => {
     console.log('Journal data to be submitted:', journalData);
   
     try {
-      await createJournal(journalData);  
+      await createJournal(journalData);
+      toast.success('Journal created successfully!');
+      setFormData({
+        title: '',
+        content: '',
+        location: '',
+        tags: '',
+        image: null,
+        imagePreview: null,
+      });
+
     } catch (err) {
+      toast.error('Failed to create journal. Please try again.');
       console.error('Error creating journal:', err.response ? err.response.data : err.message);
     }
   };
