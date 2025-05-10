@@ -3,25 +3,24 @@ import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import Connection from "../models/Connection.js";
 import FriendRequest from "../models/FriendRequest.js";
-import authenticate from "../middleware/authenticate.js";
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
 
-// // Authentication middleware
-// const authenticate = (req, res, next) => {
-//   const authHeader = req.headers.authorization;
-//   if (!authHeader) return res.status(401).json({ error: "Missing token" });
+// Authentication middleware
+const authenticate = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) return res.status(401).json({ error: "Missing token" });
 
-//   const token = authHeader.split(" ")[1];
-//   try {
-//     const { id } = jwt.verify(token, JWT_SECRET);
-//     req.userId = id;
-//     next();
-//   } catch (err) {
-//     return res.status(401).json({ error: "Invalid token" });
-//   }
-// };
+  const token = authHeader.split(" ")[1];
+  try {
+    const { id } = jwt.verify(token, JWT_SECRET);
+    req.userId = id;
+    next();
+  } catch (err) {
+    return res.status(401).json({ error: "Invalid token" });
+  }
+};
 
 // Get all users (for discovery)
 router.get("/all", authenticate, async (req, res) => {

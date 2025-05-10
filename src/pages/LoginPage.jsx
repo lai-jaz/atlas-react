@@ -19,13 +19,19 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = await dispatch(loginUser({ email, password }));
-    if (result.meta.requestStatus === 'fulfilled') {
+    try{
+      const result = await dispatch(loginUser({ email, password })).unwrap();
       await dispatch(fetchUser());
       toast({
         title: "Successfully logged in",
       });
       navigate('/profile');
+    }catch (error) {
+      const serverMessage = error?.response?.data?.error || "";
+      toast({
+        title: "Login failed",
+        description: serverMessage,
+      });
     }
   };
 

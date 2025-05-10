@@ -9,9 +9,9 @@ const userSchema = new mongoose.Schema({
     avatar: { type: String, default: "/placeholder.svg" },
     bio: { type: String },
     location: { type: String },
-    interests: [{ type: String }],
+    interests: { type: String },
     joinedDate: { type: Date, default: Date.now },
-    // Add these fields for tracking stats
+
     locationsCount: { type: Number, default: 0 },
     followersCount: { type: Number, default: 0 },
     followingCount: { type: Number, default: 0 }
@@ -22,5 +22,18 @@ const userSchema = new mongoose.Schema({
 userSchema.methods.comparePassword = function (password) {
     return bcrypt.compare(password, this.password);
   };
+
+userSchema.pre("save", async function (next) {
+  // Only hash if password is modified or new
+  if (!this.isModified("password")) return next();
+
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    return next();
+  } catch (err) {
+    return next(err);
+  }
+});
 
 export default mongoose.models.User || mongoose.model('User', userSchema);

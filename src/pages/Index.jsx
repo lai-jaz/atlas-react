@@ -7,6 +7,7 @@ import DailyTip from "../components/travel/DailyTip";
 import { motion } from "framer-motion";
 import { mockTravelTips } from "../lib/mockData.js";
 import { useSelector } from "react-redux";
+import { toast } from "sonner";
 
 const Index = () => {
   const { user } = useSelector((state) => state.auth);

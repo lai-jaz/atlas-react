@@ -22,6 +22,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { logout } from '../../store/authSlice';
+import { toast } from 'sonner';
 
 const Navbar = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);

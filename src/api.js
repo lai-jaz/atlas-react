@@ -19,7 +19,6 @@ export const login = async (email, password) => {
     const response = await axios.post(`${API_URL}/login`, { email, password });
     return response.data; // return JWT token
   } catch (error) {
-    console.error("Login error:", error);
     throw error;
   }
 };
@@ -40,23 +39,59 @@ export const getUserData = async (token) => {
 };
 
 //-----------------UPDATE USER PROFILE-----------------//
-const updateProfile = async (formData) => {
-  const token = localStorage.getItem('authToken');
-  
-  const response = await fetch('/api/profile/update', {
-    method: 'PATCH',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(formData),
-  });
+export const updateProfile = async (data) => {
 
-  if (!response.ok) {
-        throw new Error('Profile update failed');
+  try {
+    const response = await axios.patch(`${API_URL}/profile/update`, data, {
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Profile update failed:", error);
+    if (error.response && error.response.status === 404) {
+      throw new Error('Profile not found');
+    }
+
+    if (error.response && error.response.status === 500) {
+      throw new Error('Server error while updating profile');
+    }
+
+    throw new Error('Profile update failed');
   }
+};
 
-  return await response.json();
+export const updateAccount = async (data) => {
+
+  try {
+    const response = await axios.patch(`${API_URL}/profile/account/update`, data, {
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+
+    return response.data;
+  } 
+  catch (error) {
+    
+    console.error("Profile update failed:", error);
+
+    if (error.response) {
+      if (error.response.status === 400) {
+        throw new Error('Current password is incorrect');
+      }
+      if (error.response.status === 404) {
+        throw new Error('User not found');
+      }
+      if (error.response.status === 500) {
+        throw new Error('Server error while updating account');
+      }
+    }
+
+    throw new Error('Account update failed');
+  }
 };
 
 
