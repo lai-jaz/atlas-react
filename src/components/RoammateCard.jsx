@@ -14,6 +14,9 @@ const RoammateCard = ({ traveler, connectionStatus, showRelevanceScore = false, 
   const [isConnecting, setIsConnecting] = useState(false);
   const [isDisconnecting, setIsDisconnecting] = useState(false);
 
+  const interestsArr = traveler.profile?.interests ? traveler.profile?.interests.split(',') : [];
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
   const handleConnect = async () => {
     if (connectionStatus) return;
     
@@ -105,7 +108,7 @@ const RoammateCard = ({ traveler, connectionStatus, showRelevanceScore = false, 
       <CardContent className="p-6">
         <div className="flex items-center gap-4">
           <Avatar className="h-14 w-14 avatar-ring">
-            <AvatarImage src={traveler.profile?.avatar || "/placeholder.svg"} />
+            <AvatarImage src={backendUrl + traveler.profile?.avatar || "/placeholder.svg"} />
             <AvatarFallback>{traveler.name?.charAt(0)}</AvatarFallback>
           </Avatar>
           <div className="flex-1">
@@ -123,17 +126,17 @@ const RoammateCard = ({ traveler, connectionStatus, showRelevanceScore = false, 
         </div>
         
         {traveler.profile?.bio && (
-          <p className="mt-4 text-sm">{traveler.profile.bio}</p>
+          <p className="mt-4 text-sm">{traveler.profile?.bio}</p>
         )}
         
-        {traveler.profile?.interests && traveler.profile.interests.length > 0 && (
+        {traveler.profile?.interests && interestsArr.length > 0 && (
           <div className="mt-4">
             <div className="flex items-center gap-1 mb-2 text-xs text-muted-foreground">
               <Tag className="h-3 w-3" />
               <span>Interests</span>
             </div>
             <div className="flex flex-wrap gap-1">
-              {traveler.profile.interests.map((interest) => (
+              {interestsArr.map((interest) => (
                 <Badge key={interest} variant="outline" className="bg-muted/50 hover:bg-muted">
                   {interest}
                 </Badge>

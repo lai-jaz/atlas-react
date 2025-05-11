@@ -10,6 +10,7 @@ function JournalCard(props) {
   const {
     _id, title, excerpt, location, date, imageUrl, author, likes, comments, tags
   } = props;
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   return (
     <div className="journal-card group animate-enter">
@@ -26,12 +27,12 @@ function JournalCard(props) {
         <div className={`p-4 ${imageUrl ? '' : 'pt-0'}`}>
           <div className="flex items-center justify-between mb-2">
           <div className="flex items-center">
-  <Avatar className="h-6 w-6 mr-2">
-    <AvatarImage src={author?.avatar || '/placeholder.svg'} />
-    <AvatarFallback>{author?.name?.charAt(0) || 'U'}</AvatarFallback>
-  </Avatar>
-  <span className="text-sm font-medium">{author?.name || 'Unknown'}</span>
-</div>
+          <Avatar className="h-6 w-6 mr-2">
+            <AvatarImage className="object-cover" src={backendUrl + author?.avatar || '/placeholder.svg'} />
+            <AvatarFallback>{author?.name?.charAt(0) || 'U'}</AvatarFallback>
+          </Avatar>
+          <span className="text-sm font-medium">{author?.name || 'Unknown'}</span>
+        </div>
 
 <span className="text-xs text-muted-foreground">
   {date ? formatDistance(new Date(date), new Date(), { addSuffix: true }) : 'Unknown date'}

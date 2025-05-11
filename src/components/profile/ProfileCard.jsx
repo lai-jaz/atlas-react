@@ -5,9 +5,8 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 
 const ProfileCard = ({ user }) => {
-
   const interestsArr = user.profile?.interests ? user.profile?.interests.split(',') : [];
-
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   return (
     <Card className="overflow-hidden">
@@ -15,7 +14,7 @@ const ProfileCard = ({ user }) => {
       <CardContent className="pt-0 relative">
         <div className="absolute -top-16 left-4 border-4 border-background rounded-full">
           <Avatar className="h-32 w-32">
-            <AvatarImage src={user.avatar || '/placeholder.svg'} />
+            <AvatarImage className="object-cover" src={backendUrl + user.profile?.avatar || '/placeholder.svg'} />
             <AvatarFallback className="text-4xl">{user.name.charAt(0)}</AvatarFallback>
           </Avatar>
         </div>

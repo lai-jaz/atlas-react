@@ -48,7 +48,10 @@ const JournalForm = () => {
       content: formData.content,
       location: formData.location,
       tags: formData.tags.split(',').map(tag => tag.trim()),  
-      author: { name: user?.name },  
+      author: { 
+        name: user?.name,
+        avatar: user?.profile?.avatar
+      },  
       userId: user?._id,  
       date: new Date(), 
     };

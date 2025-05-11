@@ -30,6 +30,7 @@ const Navbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const isLoggedIn = !!user;
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const handleLogout = () => {
     dispatch(logout());
@@ -80,7 +81,7 @@ const Navbar = () => {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="relative h-8 w-8 rounded-full">
                   <Avatar className="h-8 w-8 avatar-ring">
-                    <AvatarImage src="/placeholder.svg" alt="Profile" />
+                    <AvatarImage className ="object-cover" src={backendUrl + user.profile?.avatar || '/placeholder.svg'} alt="Profile" />
                     <AvatarFallback>AT</AvatarFallback>
                   </Avatar>
                 </Button>

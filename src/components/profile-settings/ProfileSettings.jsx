@@ -4,13 +4,18 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUser } from "../../store/authSlice";
 import { updateProfile } from "../../api";
 
 const ProfileSettings = () => {
     const user = useSelector((state) => state.auth.user);
     
     const [isSaving, setIsSaving] = useState(false);
+    const [file, setFile] = useState(null);
+    const [imagePreview, setImagePreview] = useState('');
+    const dispatch = useDispatch();
+
     const [profileData, setProfileData] = useState({
     name: '',
     email: user?.email || '',
@@ -53,19 +58,44 @@ const ProfileSettings = () => {
         }
     };
 
-    const handleSubmit = async (e) => {
-            e.preventDefault();
-            setIsSaving(true);
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        setFile(file);
+        setImagePreview(URL.createObjectURL(file));
+    };
+
+    // const handleSubmit = async (e) => {
+    //         e.preventDefault();
+    //         setIsSaving(true);
     
-            try {
-                await updateProfile(profileData); 
-                toast.success("Profile updated successfully!");
-            } catch (error) {
-                toast.error("Failed to update profile!");
-            } finally {
-                setIsSaving(false); 
-            }
+    //         try {
+    //             await updateProfile(profileData); 
+    //             toast.success("Profile updated successfully!");
+    //         } catch (error) {
+    //             toast.error("Failed to update profile!");
+    //         } finally {
+    //             setIsSaving(false); 
+    //         }
+    // }
+
+    const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSaving(true);
+
+    try {
+        await updateProfile(profileData, file);
+        await dispatch(fetchUser());
+        toast.success('Profile updated successfully!');
+    } catch (error) {
+        console.error(error);
+        toast.error('Failed to update profile');
+    } finally {
+        setIsSaving(false);
     }
+    };
+
     
   return (
     <form onSubmit={handleSubmit} className="space-y-4 max-w-2xl mx-left p-4 bg-white">
@@ -84,9 +114,15 @@ const ProfileSettings = () => {
         </div>
 
         <div>
-            {/* <label className="block mb-1 text-sm font-medium">Upload Image</label>
+            <label className="block mb-1 text-sm font-medium">Upload Avatar</label>
             <Input type="file" accept="image/*" onChange={handleImageChange} />
-            {formData.imagePreview && <img src={formData.imagePreview} alt="Preview" className="mt-2 rounded-lg max-h-48 object-cover" />} */}
+            {imagePreview && (
+                <img
+                    src={imagePreview}
+                    alt="Avatar Preview"
+                    className="mt-2 rounded-lg max-h-48 object-cover"
+                />
+            )}
         </div>
         <Button type="submit" disabled={isSaving}>{isSaving ? 'Saving...' : 'Save Changes'}</Button>
     </form>

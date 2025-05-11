@@ -39,61 +39,33 @@ export const getUserData = async (token) => {
 };
 
 //-----------------UPDATE USER PROFILE-----------------//
-export const updateProfile = async (data) => {
 
-  try {
-    const response = await axios.patch(`${API_URL}/profile/update`, data, {
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    });
+export const updateProfile = async (profileData, file) => {
+  const formData = new FormData();
 
-    return response.data;
-  } catch (error) {
-    console.error("Profile update failed:", error);
-    if (error.response && error.response.status === 404) {
-      throw new Error('Profile not found');
-    }
+  formData.append('name', profileData.name);
+  formData.append('email', profileData.email);
+  formData.append('bio', profileData.profile.bio);
+  formData.append('location', profileData.profile.location);
+  formData.append('interests', profileData.profile.interests);
 
-    if (error.response && error.response.status === 500) {
-      throw new Error('Server error while updating profile');
-    }
-
-    throw new Error('Profile update failed');
+  if (file) {
+    formData.append('avatar', file);
   }
-};
 
-export const updateAccount = async (data) => {
-
-  try {
-    const response = await axios.patch(`${API_URL}/profile/account/update`, data, {
+  try{
+    const response = await axios.patch(`${API_URL}/profile/update`, formData, {
       headers: {
-        'Content-Type': 'application/json',
-      }
+        'Content-Type': 'multipart/form-data',
+      },
     });
-
     return response.data;
-  } 
-  catch (error) {
-    
-    console.error("Profile update failed:", error);
 
-    if (error.response) {
-      if (error.response.status === 400) {
-        throw new Error('Current password is incorrect');
-      }
-      if (error.response.status === 404) {
-        throw new Error('User not found');
-      }
-      if (error.response.status === 500) {
-        throw new Error('Server error while updating account');
-      }
-    }
-
-    throw new Error('Account update failed');
+  }catch (error) {
+    throw error;
   }
-};
 
+};
 
 //-----------------PINNED LOCATIONS-----------------//
 
