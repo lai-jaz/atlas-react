@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -7,21 +7,20 @@ import { Badge } from '@/components/ui/badge';
 import { createJournal } from '../../api';
 import { useSelector } from 'react-redux';
 import { toast } from 'sonner';
-
 const JournalForm = () => {
-  const user = useSelector((state) => state.auth.user);  // Get user from Redux store
+  const user = useSelector((state) => state.auth.user); 
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     title: '',
     content: '',
     location: '',
     tags: '',
-    image: null,
-    imagePreview: null,
   });
+  
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
 
-  const handleChange = (e) => {
+const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -42,7 +41,7 @@ const JournalForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+  setIsSubmitting(true);
     const journalData = {
       title: formData.title,
       content: formData.content,
@@ -60,21 +59,13 @@ const JournalForm = () => {
     console.log('Journal data to be submitted:', journalData);
   
     try {
-      await createJournal(journalData);
-      toast.success('Journal created successfully!');
-      setFormData({
-        title: '',
-        content: '',
-        location: '',
-        tags: '',
-        image: null,
-        imagePreview: null,
-      });
-
+      await createJournal(journalData); 
+      toast.success('your journal entry has been created successfully!');
+      setFormData({ title: '', content: '', location: '', tags: ''});
     } catch (err) {
-      toast.error('Failed to create journal. Please try again.');
-      console.error('Error creating journal:', err.response ? err.response.data : err.message);
+      toast.error('Failed to create journal. Please try again.')
     }
+    setIsSubmitting(false);
   };
   
   

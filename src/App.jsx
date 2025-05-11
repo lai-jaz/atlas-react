@@ -14,14 +14,15 @@ import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/prot-route/ProtectedRoute";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
+import {AuthProvider} from './hooks/useAuth'
 import { initAuth } from "./store/authSlice";
 import JournalDetailPage from "./pages/JournalDetailPage";
 import SettingsPage from "./pages/SettingsPage";
-
-const queryClient = new QueryClient();
+import JournalEditPage from "./pages/JournalEditPage";
+import JournalGrid from "./components/journal/JournalGrid";
 
 const App = () => {
-  
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -29,27 +30,32 @@ const App = () => {
   }, []);
 
   return (
-  <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/map" element={<ProtectedRoute><MapPage /></ProtectedRoute>} />
-            <Route path="/journal" element={<ProtectedRoute><JournalPage /></ProtectedRoute>} />
-            <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-            <Route path="/roammates" element={<ProtectedRoute><RoammatesPage /></ProtectedRoute>} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
-            <Route path="/journal/:journalId" element={<ProtectedRoute><JournalDetailPage /></ProtectedRoute>}/>
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <AuthProvider>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/map" element={<ProtectedRoute><MapPage /></ProtectedRoute>} />
+              <Route path="/journal" element={<ProtectedRoute><JournalPage /></ProtectedRoute>} />
+              <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+              <Route path="/roammates" element={<ProtectedRoute><RoammatesPage /></ProtectedRoute>} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+              <Route path="/journal/:journalId" element={<ProtectedRoute><JournalDetailPage /></ProtectedRoute>} />
+              <Route path="/edit/:journalId" element={<JournalEditPage />} />
+              <Route path="/journal/memory" element={<JournalGrid />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </AuthProvider>
         </BrowserRouter>
       </TooltipProvider>
-  </QueryClientProvider>
+    </QueryClientProvider>
 
-)};
+  )
+};
 
 export default App;
