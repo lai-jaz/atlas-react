@@ -73,16 +73,33 @@ function JournalCard(props) {
           </div>
 
           <div className="flex flex-wrap gap-1 mb-3">
-  {tags && Array.isArray(tags) ? (
-    tags.map((tag) => (
-      <Badge key={tag} variant="outline" className="bg-muted/50 hover:bg-muted">
-        {tag}
+  {tags && typeof tags === 'string' ? (
+    // If tags is a plain comma-separated string
+    tags.split(',').map((tag, idx) => (
+      <Badge key={idx} variant="outline" className="bg-muted/50 hover:bg-muted">
+        #{tag.trim().replace(/^#/, '')}
+      </Badge>
+    ))
+  ) : Array.isArray(tags) && tags.length === 1 && typeof tags[0] === 'string' && tags[0].includes(',') ? (
+    // If tags is an array with a single comma-separated string
+    tags[0].split(',').map((tag, idx) => (
+      <Badge key={idx} variant="outline" className="bg-muted/50 hover:bg-muted">
+        #{tag.trim().replace(/^#/, '')}
+      </Badge>
+    ))
+  ) : Array.isArray(tags) && tags.length > 0 ? (
+    // Normal array case
+    tags.map((tag, idx) => (
+      <Badge key={idx} variant="outline" className="bg-muted/50 hover:bg-muted">
+        #{tag.trim().replace(/^#/, '')}
       </Badge>
     ))
   ) : (
-    <p>No tags available</p>
+    <p className="text-xs text-muted-foreground">No tags available</p>
   )}
 </div>
+
+
 
 
           <div className="flex items-center justify-between mt-2 pt-2 border-t">
