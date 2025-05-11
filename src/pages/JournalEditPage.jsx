@@ -56,36 +56,59 @@ const JournalEditPage = () => {
         <h1 className="text-3xl font-extrabold mb-2">Edit Journal</h1>
 
         <form onSubmit={(e) => {
-          e.preventDefault();
-          handleUpdate({ title: journal.title, content: journal.content });
+  e.preventDefault();
 
-        }}>
-          <div>
-            <label className="block mb-2" htmlFor="title">Title</label>
-            <input
-              type="text"
-              id="title"
-              className="w-full p-2 border border-gray-300 rounded"
-              value={journal.title}
-              onChange={(e) => setJournal({ ...journal, title: e.target.value })}
-            />
-          </div>
-          <div className="mt-4">
-            <label className="block mb-2" htmlFor="content">Content</label>
-            <textarea
-              id="content"
-              className="w-full p-2 border border-gray-300 rounded"
-              rows="6"
-              value={journal.content}
-              onChange={(e) => setJournal({ ...journal, content: e.target.value })}
-            />
-          </div>
-          <div className="mt-4">
-            <Button type="submit" variant="primary">
-              Save Changes
-            </Button>
-          </div>
-        </form>
+  const updatedJournal = {
+    title: journal.title || "",
+    content: journal.content || "",
+    tags: (journal.tags || "")
+      .split(",")
+      .map(tag => tag.trim())
+      .filter(tag => tag.length > 0)
+      .map(tag => (tag.startsWith("#") ? tag : `#${tag}`))
+      .join(","),
+    userId,
+  };
+
+  handleUpdate(updatedJournal);
+}}>
+
+  <div>
+    <label className="block mb-2" htmlFor="title">Title</label>
+    <input
+      type="text"
+      id="title"
+      className="w-full p-2 border border-gray-300 rounded"
+      value={journal.title}
+      onChange={(e) => setJournal({ ...journal, title: e.target.value })}
+    />
+  </div>
+  <div className="mt-4">
+    <label className="block mb-2" htmlFor="content">Content</label>
+    <textarea
+      id="content"
+      className="w-full p-2 border border-gray-300 rounded"
+      rows="6"
+      value={journal.content}
+      onChange={(e) => setJournal({ ...journal, content: e.target.value })}
+    />
+  </div>
+  <div className="mt-4">
+    <label className="block mb-2" htmlFor="tags">Hashtags (comma-separated)</label>
+    <input
+      type="text"
+      id="tags"
+      className="w-full p-2 border border-gray-300 rounded"
+      value={journal.tags || ""}
+      onChange={(e) => setJournal({ ...journal, tags: e.target.value })}
+    />
+  </div>
+  <div className="mt-4">
+    <Button type="submit" variant="primary">
+      Save Changes
+    </Button>
+  </div>
+</form>
       </div>
     </div>
   );
