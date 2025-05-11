@@ -344,7 +344,7 @@ router.get("/suggestions", authenticate, async (req, res) => {
     connectedUserIds.push(currentUserId);
     
     // Find users with similar interests or location
-    const userInterests = currentUser.profile?.interests || [];
+    const userInterests = currentUser.profile?.interests ? currentUser.profile?.interests.split(',') : [];
     const userLocation = currentUser.profile?.location || "";
     
     let matchQuery = { _id: { $nin: connectedUserIds } };
@@ -352,7 +352,10 @@ router.get("/suggestions", authenticate, async (req, res) => {
     // If user has interests, find users with matching interests
     if (userInterests.length > 0) {
       matchQuery.$or = [
-        { "profile.interests": { $in: userInterests } }
+        ...userInterests.map(interest => ({
+          "profile.interests": { $regex: new RegExp(`(^|,\\s*)${interest}(,|$)`, 'i')}
+        }))
+
       ];
       
       // If user has location, add it as another matching criteria
@@ -371,12 +374,14 @@ router.get("/suggestions", authenticate, async (req, res) => {
     
     // Calculate relevance score for each user
     const usersWithRelevance = suggestedUsers.map(user => {
-      const userObj = user.toObject();
+    const userObj = user.toObject();
       
       // Count common interests
-      const commonInterests = userInterests.filter(interest => 
-        user.profile?.interests?.includes(interest)
-      ).length;
+      const otherInterests = user.profile?.interests? user.profile.interests.split(',') : [];
+
+      const commonInterests = userInterests.filter(interest =>
+          otherInterests.includes(interest)
+        ).length;
       
       // Check if location matches
       const locationMatch = userLocation && user.profile?.location && 

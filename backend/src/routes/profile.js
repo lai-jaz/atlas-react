@@ -21,22 +21,24 @@ const upload = multer({ storage });
 router.patch('/update', upload.single('avatar'), async (req, res) => {
   try {
     const { name, email, bio, location, interests } = req.body;
-    const avatarPath = req.file ? `/uploads/${req.file.filename}` : undefined;
+    const avatarPath = req.file ? `/uploads/${req.file.filename}` : "";
+
+    const existingUser = await User.findOne({ email });
+    if (!existingUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
 
     const updatedFields = {
       name,
       profile: {
         bio,
         location,
-        interests
+        interests,
+        avatar: avatarPath || existingUser.profile.avatar
       }
     };
 
-    if (avatarPath) {
-      updatedFields.profile.avatar = avatarPath;
-    }
-
-    const updatedUser = await User.findOneAndUpdate(
+    await User.findOneAndUpdate(
       { email},
       { $set: updatedFields },
       { runValidators: true }

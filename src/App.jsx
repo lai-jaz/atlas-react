@@ -22,7 +22,9 @@ import JournalEditPage from "./pages/JournalEditPage";
 import JournalGrid from "./components/journal/JournalGrid";
 
 const App = () => {
-
+  // Create a new QueryClient instance
+  const queryClient = new QueryClient();
+  
   const dispatch = useDispatch();
 
   useEffect(() => {

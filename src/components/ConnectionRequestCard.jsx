@@ -57,7 +57,7 @@ const ConnectionRequestCard = ({ request }) => {
       <CardContent className="p-6">
         <div className="flex items-center gap-4">
           <Avatar className="h-14 w-14 avatar-ring">
-            <AvatarImage src={requester.avatar || "/placeholder.svg"} />
+            <AvatarImage className="object-cover" src={requester.avatar || "/placeholder.svg"} />
             <AvatarFallback>{requester.name?.charAt(0) || "U"}</AvatarFallback>
           </Avatar>
           <div className="flex-1">
