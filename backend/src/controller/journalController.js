@@ -129,11 +129,7 @@ export const deleteJournal = async (req, res) => {
 
 export const updateJournal = async (req, res) => {
   const { id } = req.params;
-  const { title, content, location, tags, userId } = req.body;
-
-  if (!title || !content) {
-    return res.status(400).json({ message: "Title and content are required" });
-  }
+  const { title, content, tags, location, userId } = req.body;
 
   try {
     const journal = await Journal.findById(id);
@@ -141,16 +137,15 @@ export const updateJournal = async (req, res) => {
       return res.status(404).json({ message: "Journal not found" });
     }
 
-    
     if (journal.userId.toString() !== userId) {
       return res.status(403).json({ message: "You do not have permission to edit this journal" });
     }
 
+    if (title !== undefined) journal.title = title;
+    if (content !== undefined) journal.content = content;
+    if (tags !== undefined) journal.tags = tags;
+    if (location !== undefined) journal.location = location;
 
-    journal.title = title;
-    journal.content = content;
-    journal.location = location;
-    journal.tags = tags;
 
     await journal.save();
     res.status(200).json(journal);
@@ -159,7 +154,6 @@ export const updateJournal = async (req, res) => {
     res.status(500).json({ message: "Error updating journal", error: err });
   }
 };
-
 export const memoryJournals= async (req, res) => {
   try {
     const today = new Date();
