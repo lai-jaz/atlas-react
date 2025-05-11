@@ -14,12 +14,12 @@ import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/prot-route/ProtectedRoute";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
+import {AuthProvider} from './hooks/useAuth'
 import { initAuth } from "./store/authSlice";
 import JournalDetailPage from "./pages/JournalDetailPage";
 import SettingsPage from "./pages/SettingsPage";
 import JournalEditPage from "./pages/JournalEditPage";
 import JournalGrid from "./components/journal/JournalGrid";
-const queryClient = new QueryClient();
 
 const App = () => {
 
