@@ -1,8 +1,10 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getJournalById, deleteJournal } from "../api";
+import { getJournalById, deleteJournal, toggleJournalLike } from "../api";
 import { useSelector } from "react-redux";
 import { Button } from "@/components/ui/button";
+import { Heart, MessageCircle } from "lucide-react";
+import { CommentModal } from "@/components/social/CommentModal";
 
 const JournalDetailPage = () => {
   const { journalId } = useParams();
@@ -10,23 +12,36 @@ const JournalDetailPage = () => {
   const userId = useSelector((state) => state.auth.user._id);
   const [journal, setJournal] = useState(null);
   const [error, setError] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+  const [likesCount, setLikesCount] = useState(0);
+  const [showComments, setShowComments] = useState(false);
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
-    
-const fetchJournal = async () => {
-  try {
-    const data = await getJournalById(journalId);  
-    setJournal(data);
-  } catch (err) {
-    console.error("Error fetching journal:", err);
-    setError(true);
-  }
-};
+      const fetchJournal = async () => {
+        try {
+          const data = await getJournalById(journalId);
+          setJournal(data);
+          setLikesCount(data.likes || 0);
+        } catch (err) {
+          console.error("Error fetching journal:", err);
+          setError(true);
+        }
+      };
+  
+      fetchJournal();
+    }, [journalId]);
 
-
-    fetchJournal();
-  }, [journalId]);
+    const handleLike = async () => {
+        try {
+          const token = localStorage.getItem('token');
+          const result = await toggleJournalLike(journalId, token);
+          setIsLiked(result.liked);
+          setLikesCount(prev => result.liked ? prev + 1 : prev - 1);
+        } catch (error) {
+          console.error('Error toggling like:', error);
+        }
+      };
 
   const handleDelete = async () => {
     if (!window.confirm("Are you sure you want to delete this journal?")) return;
@@ -100,6 +115,34 @@ const fetchJournal = async () => {
             </span>
           ))}
         </div>
+      )}
+      <div className="flex items-center gap-4 mt-6">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleLike}
+          className="flex items-center gap-2"
+        >
+          <Heart className={`h-4 w-4 ${isLiked ? 'fill-atlas-orange text-atlas-orange' : 'text-atlas-orange'}`} />
+          <span>{likesCount} likes</span>
+        </Button>
+
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setShowComments(true)}
+          className="flex items-center gap-2"
+        >
+          <MessageCircle className="h-4 w-4" />
+          <span>{journal.comments?.length || 0} comments</span>
+        </Button>
+      </div>
+
+      {showComments && (
+        <CommentModal
+          journalId={journalId}
+          onClose={() => setShowComments(false)}
+        />
       )}
     </div>
   );

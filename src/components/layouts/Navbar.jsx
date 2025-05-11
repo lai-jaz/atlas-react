@@ -25,7 +25,6 @@ import { logout } from '../../store/authSlice';
 import { toast } from 'sonner';
 
 const Navbar = () => {
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -55,26 +54,7 @@ const Navbar = () => {
           </Link>
         </div>
 
-        <div className={`${isSearchOpen ? 'flex' : 'hidden'} md:flex flex-1 max-w-md px-4`}>
-          <div className="relative w-full">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search destinations, users or journals..."
-              className="w-full pl-8 bg-muted/30"
-            />
-          </div>
-        </div>
-
         <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden"
-            onClick={() => setIsSearchOpen(!isSearchOpen)}
-          >
-            <Search className="h-5 w-5" />
-            <span className="sr-only">Search</span>
-          </Button>
 
           {isLoggedIn ? (
             <DropdownMenu>

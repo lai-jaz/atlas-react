@@ -34,19 +34,6 @@ const MapPage = () => {
     dispatch(addLocation(newLocation)); // Add new location via backend
   };
 
-  const countCountries = () => {
-    const countries = new Set();
-    locations.forEach((location) => {
-      // Updated this to handle backend structure
-      const locationName = location.name || "";
-      const locationParts = locationName.split(", ");
-      if (locationParts.length > 1) {
-        countries.add(locationParts[locationParts.length - 1]);
-      }
-    });
-    return countries.size;
-  };
-
   // Transform backend location data for the InteractiveMap component
   const transformedLocations = locations.map(loc => ({
     id: loc._id,
@@ -72,12 +59,6 @@ const MapPage = () => {
         </div>
 
         <Tabs defaultValue="my-map" className="w-full">
-          <TabsList className="mb-4">
-            <TabsTrigger value="my-map">My Map</TabsTrigger>
-            <TabsTrigger value="community">Community</TabsTrigger>
-            <TabsTrigger value="wishlist">Wishlist</TabsTrigger>
-          </TabsList>
-
           <TabsContent value="my-map">
             <InteractiveMap
               locations={transformedLocations}
@@ -89,33 +70,11 @@ const MapPage = () => {
                 <p className="text-sm font-medium">
                   Locations Visited: {locations.length}
                 </p>
-                <p className="text-sm text-muted-foreground">
-                  Countries Visited: {countCountries()}
-                </p>
               </div>
-              <Button variant="outline">Download Map</Button>
             </div>
           </TabsContent>
 
-          <TabsContent value="community">
-            <div className="p-12 text-center">
-              <h3 className="text-lg font-medium mb-2">Community Map Feature</h3>
-              <p className="text-muted-foreground mb-4">
-                This feature will show locations popular among other Atlas users.
-              </p>
-              <Button>Sign Up to Access</Button>
-            </div>
-          </TabsContent>
 
-          <TabsContent value="wishlist">
-            <div className="p-12 text-center">
-              <h3 className="text-lg font-medium mb-2">Travel Wishlist</h3>
-              <p className="text-muted-foreground mb-4">
-                Mark places you want to visit in the future.
-              </p>
-              <Button>Sign Up to Create Wishlist</Button>
-            </div>
-          </TabsContent>
         </Tabs>
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

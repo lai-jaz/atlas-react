@@ -1,16 +1,35 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { formatDistance } from 'date-fns';
 import { Link } from 'react-router-dom';
 import { MapPin, MessageCircle, User, Heart } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { toggleJournalLike } from '@/api';
+import { CommentDialog } from './CommentDialog';
+import JournalComments from './JournalComments';
 
 function JournalCard(props) {
   const {
     _id, title, excerpt, location, date, imageUrl, author, likes, comments, tags
   } = props;
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+  const [isLiked, setIsLiked] = useState(false);
+    const [likesCount, setLikesCount] = useState(likes?.length || 0);
+    const [commentsCount, setCommentsCount] = useState(comments?.length || 0);
+    const [showComments, setShowComments] = useState(false);
+
+    const handleLike = async () => {
+        try {
+          const token = localStorage.getItem('token');
+          const result = await toggleJournalLike(_id, token);
+          setIsLiked(result.liked);
+          setLikesCount(prev => result.liked ? prev + 1 : prev - 1);
+        } catch (error) {
+          console.error('Error toggling like:', error);
+        }
+      };
 
   return (
     <div className="journal-card group animate-enter">
@@ -68,14 +87,20 @@ function JournalCard(props) {
 
           <div className="flex items-center justify-between mt-2 pt-2 border-t">
             <div className="flex items-center space-x-3">
-              <Button variant="ghost" size="sm" className="flex items-center space-x-1 h-8 px-2">
-                <Heart className="h-4 w-4 text-atlas-orange" />
-                <span className="text-xs">{likes}</span>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="flex items-center space-x-1 h-8 px-2"
+                onClick={handleLike}
+              >
+                <Heart className={`h-4 w-4 ${isLiked ? 'fill-atlas-orange text-atlas-orange' : 'text-atlas-orange'}`} />
+                <span className="text-xs">{likesCount} likes</span>
               </Button>
-              <Button variant="ghost" size="sm" className="flex items-center space-x-1 h-8 px-2">
-                <MessageCircle className="h-4 w-4" />
-                <span className="text-xs">{comments}</span>
-              </Button>
+              <JournalComments 
+                journalId={_id} 
+                initialCommentsCount={commentsCount}
+                onCommentAdded={() => setCommentsCount(prev => prev + 1)}
+              />
             </div>
             <Button variant="ghost" size="sm" asChild>
               <Link to={`/journal/${_id}`}>Read more</Link>

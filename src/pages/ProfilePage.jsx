@@ -15,13 +15,28 @@
     const dispatch = useDispatch();
     const user = useSelector((state) => state.auth.user);
     const { connected } = useSelector((state) => state.roammates);
-    const { locations } = useSelector((state) => state.map);
+    const { locations, loading } = useSelector((state) => state.map);
 
     useEffect(() => {
       // Fetch data when component mounts
       dispatch(fetchConnectedRoammates());
       dispatch(fetchLocations());
     }, [dispatch]);
+
+    const handleAddLocation = (newLocation) => {
+        console.log("Handling add location in MapPage:", newLocation);
+        dispatch(addLocation(newLocation)); // Add new location via backend
+      };
+
+    const transformedLocations = locations.map(loc => ({
+      id: loc._id,
+      lat: loc.coordinates?.lat || 0,
+      lng: loc.coordinates?.lng || 0,
+      title: loc.name || "Untitled Location",
+      description: loc.description || "",
+      visitDate: loc.visitDate || new Date(loc.datePinned).toISOString().split("T")[0],
+      color: loc.color || "#2A9D8F"
+    }));
 
     if (!user) 
       return <div className="text-center mt-10"><h2 className="text-2xl font-bold">Loading...</h2></div>;
@@ -58,7 +73,11 @@
                     <h2 className="text-2xl font-bold">Travel Map</h2>
                     <Button variant="outline">Share Map</Button>
                   </div>
-                  <InteractiveMap />
+                  <InteractiveMap 
+                    locations={transformedLocations}
+                    onAddLocation={handleAddLocation}
+                    isLoading={loading}
+                  />
                 </TabsContent>
                 <TabsContent value="roammates">
                   <div className="flex justify-between items-center mb-4">

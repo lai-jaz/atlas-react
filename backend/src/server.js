@@ -8,6 +8,8 @@ import tipRoutes from './routes/tips.js';
 import roammateRoutes from './routes/roammates.js';
 import journalRoutes from "./routes/journalRoutes.js";
 import profileRoutes from "./routes/profile.js";
+import socialRoutes from "./routes/social.js";
+
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -25,6 +27,7 @@ app.use('/api/tips', tipRoutes);
 app.use('/api/roammates', roammateRoutes);
 app.use('/api/journals', journalRoutes);
 app.use('/api/profile', profileRoutes);
+app.use('/api/social', socialRoutes);
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 mongoose

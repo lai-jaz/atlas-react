@@ -210,20 +210,9 @@ export const createJournal = async (journalData, file) => {
     formData.append('content', journalData.content);
     formData.append('location', journalData.location);
     formData.append('tags', journalData.tags);
-    formData.append('author', JSON.stringify(journalData.author));
     formData.append('userId', journalData.userId);
     formData.append('date', journalData.date);
 
-    /*title: formData.title,
-      content: formData.content,
-      location: formData.location,
-      tags: formData.tags.split(',').map(tag => tag.trim()),  
-      author: { 
-        name: user?.name,
-        avatar: user?.profile?.avatar
-      },  
-      userId: user?._id,  
-      date: new Date(),  */
     if (file) {
       formData.append('imageUrl', file);
     }
@@ -240,6 +229,22 @@ export const createJournal = async (journalData, file) => {
     throw err;
   }
 };
+
+// GET author of journal
+export const getAuthorInfo = async (authorid) => {
+  try{
+      const res = await axios.get(`${API_URL}/users/${authorid}`);
+      const author = res.data;
+
+      return {
+        name: author.name,
+        avatar: author.profile?.avatar || '', // fallback to empty string if missing
+      };
+  }
+  catch(err) {
+    throw err;
+  }
+}
 
 //update an existing journal
 export const updateJournal = async (id, updatedData) => {
@@ -288,8 +293,85 @@ export const getMemories = async (userId, period) => {
   }
 };
 
+//---------------------JOURNAL LIKES/COMMENTS-----------//
+const checkConnection = async (userId, token) => {
+  try {
+    const response = await axios.get(`${API_URL}/social/check-connection/${userId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data.isConnected;
+  } catch (error) {
+    return false;
+  }
+};
 
+export const toggleJournalLike = async (journalId, token) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/social/journals/${journalId}/like`,
+      {},
+      {
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response?.status === 403) {
+      throw new Error('Must be connected to like this journal');
+    }
+    throw error;
+  }
+};
 
+export const addJournalComment = async (journalId, content, token) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/social/journals/${journalId}/comment`,
+      { content },
+      {
+        headers: { Authorization: `Bearer ${token}` }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error adding comment:", error);
+    throw error;
+  }
+};
+
+export const getJournalComments = async (journalId, token) => {
+  try {
+    const response = await axios.get(
+      `${API_URL}/social/journals/${journalId}/comments`,
+      {
+        headers: { Authorization: `Bearer ${token}` }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching comments:", error);
+    throw error;
+  }
+};
+
+export const toggleTipLike = async (tipId, token) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/social/tips/${tipId}/like`,
+      {},
+      {
+        headers: { Authorization: `Bearer ${token}` }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error toggling tip like:", error);
+    throw error;
+  }
+};
 
 
 //-----------------ROAMMATES (CONNECTIONS)-----------------//
@@ -461,7 +543,6 @@ export const respondToRequest = async (requestId, action, token) => {
   }
 };
 
-// Add this function to your API file
 export const removeConnectionById = async (connectionId, token) => {
   try {
     const res = await axios.delete(`${API_URL}/roammates/connection/${connectionId}`, {

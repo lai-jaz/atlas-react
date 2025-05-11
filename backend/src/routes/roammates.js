@@ -436,13 +436,15 @@ router.delete("/connection/:connectionId", authenticate, async (req, res) => {
       // When A follows B and the connection is removed:
       // A's following count decreases
       // B's followers count decreases
-      await User.findByIdAndUpdate(requesterId, {
-        $inc: { "profile.followingCount": -1 }
-      });
-      
-      await User.findByIdAndUpdate(recipientId, {
-        $inc: { "profile.followersCount": -1 }
-      });
+      await User.findOneAndUpdate(
+        { _id: requesterId, "profile.followingCount": { $gt: 0 } },
+        { $inc: { "profile.followingCount": -1 } }
+      );
+
+      await User.findOneAndUpdate(
+        { _id: recipientId, "profile.followersCount": { $gt: 0 } },
+        { $inc: { "profile.followersCount": -1 } }
+      );
       
       // Remove any FriendRequest records
       await FriendRequest.deleteMany({

@@ -11,18 +11,20 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
-import { getJournals, getMemories } from '../../api';
+import { getAuthorInfo, getJournals, getMemories } from '../../api';
 import { useSelector } from 'react-redux';
 const JournalGrid = () => {
   const user = useSelector((state) => state.auth.user);
 
   const [journals, setJournals] = useState([]);
+  const [authors, setAuthors] = useState({});
   const [memoryJournals, setMemoryJournals] = useState([]);
   const [sortOption, setSortOption] = useState('newest');
   const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
   const [memoryOption, setMemoryOption] = useState('');
+  
   useEffect(() => {
     const fetchData = async () => {
       if (!user?._id) return;
@@ -30,13 +32,29 @@ const JournalGrid = () => {
       setLoading(true);
       setError(false);
       try {
+        let data = undefined;
         if (memoryOption) {
-          const data = await getMemories(user._id, memoryOption);
+          data = await getMemories(user._id, memoryOption);
           setMemoryJournals(Array.isArray(data) ? data : []);
         } else {
-          const data = await getJournals(user._id);
+          data = await getJournals(user._id);
           setJournals(Array.isArray(data) ? data : []);
           setMemoryJournals([]);
+        }
+        if (data && Array.isArray(data)) {
+          const uniqueUserIds = [...new Set(data.map(j => j.userId))];
+          const authorPromises = uniqueUserIds.map(id => getAuthorInfo(id));
+          
+          const resolvedAuthors = await Promise.allSettled(authorPromises);
+          
+          const authorMap = {};
+          resolvedAuthors.forEach((res, idx) => {
+            if (res.status === 'fulfilled') {
+              authorMap[uniqueUserIds[idx]] = res.value;
+            }
+          });
+
+          setAuthors(authorMap);
         }
       } catch (err) {
         console.error('Fetch error:', err);
@@ -62,6 +80,11 @@ const JournalGrid = () => {
     (journal.tags && journal.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase())))
   );
 
+  const getAuthor = async (userId) => {
+    const author = await getAuthorInfo(userId);
+    return author;
+  }
+
 
   const sortedJournals = [...filteredJournals].sort((a, b) => {
     switch (sortOption) {
@@ -77,6 +100,7 @@ const JournalGrid = () => {
         return 0;
     }
   });
+
   const formatPeriodLabel = (period) => {
     switch (period) {
       case "year": return "You on this day last year";
@@ -182,9 +206,11 @@ const JournalGrid = () => {
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
-            {displayJournals.map((journal) => (
-              <JournalCard key={journal._id} {...journal} />
-            ))}
+            {displayJournals.map((journal) => {
+
+              const author = authors[journal.userId] || null;
+              return <JournalCard key={journal._id} {...journal} author = {author} />}
+            )}
           </div>
         </>
       )}

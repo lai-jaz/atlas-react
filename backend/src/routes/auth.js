@@ -82,5 +82,22 @@ router.post("/login", async (req, res) => {
       res.status(401).json({ error: "Invalid token" });
     }
   });
+
+//----------------------GET USER-------------------------------
+router.get('/users/:authorid', async (req, res) => {
+  try {
+    const { authorid } = req.params;
+
+    const user = await User.findById(authorid).select('name profile.avatar'); // only get name and avatar
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json(user);
+  } catch (err) {
+    console.error('Error fetching user info:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
   
 export default router;

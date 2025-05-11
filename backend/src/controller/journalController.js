@@ -65,11 +65,10 @@ export const getJournalById = async (req, res) => {
 
 
 export const createJournal = async (req, res) => {
-  const { title, content, location, tags, author: authorStr, userId, date } = req.body;
-  const author = JSON.parse(authorStr);
+  const { title, content, location, tags, userId, date } = req.body;
   const imageUrl = req.file ? `/uploads/${req.file.filename}` : "";
 
-  if (!title || !content || !userId || !author?.name) {
+  if (!title || !content || !userId) {
     return res.status(400).json({ message: 'Missing required fields' });
   }
 
@@ -92,7 +91,6 @@ export const createJournal = async (req, res) => {
       content,
       location,
       tags,
-      author,
       userId,
       date,
       imageUrl,
