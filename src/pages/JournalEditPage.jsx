@@ -16,7 +16,11 @@ const JournalEditPage = () => {
     const fetchJournal = async () => {
       try {
         const data = await getJournalById(journalId);
-        setJournal(data);
+        setJournal({
+  ...data,
+  tags: Array.isArray(data.tags) ? data.tags.join(",") : data.tags || "",
+});
+
       } catch (err) {
         console.error("Error fetching journal:", err);
         setError(true);
