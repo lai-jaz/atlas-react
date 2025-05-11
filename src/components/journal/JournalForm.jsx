@@ -10,6 +10,9 @@ import { toast } from 'sonner';
 const JournalForm = () => {
   const user = useSelector((state) => state.auth.user); 
   const navigate = useNavigate();
+  const [tagInput, setTagInput] = useState('');
+const [tags, setTags] = useState([]);
+
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -41,13 +44,14 @@ const JournalForm = () => {
       title: formData.title,
       content: formData.content,
       location: formData.location,
-      tags: formData.tags.split(',').map(tag => tag.trim()),  
+      tags: tags,  
       author: { 
         name: user?.name,
         avatar: user?.profile?.avatar
       },  
       userId: user?._id,  
       date: new Date(), 
+
     };
   
     
@@ -63,7 +67,17 @@ const JournalForm = () => {
     setIsSubmitting(false);
   };
   
-  
+  const handleTagKeyDown = (e) => {
+  if (e.key === 'Enter' && tagInput.trim()) {
+    e.preventDefault();
+    const newTag = tagInput.trim().startsWith('#') ? tagInput.trim() : `#${tagInput.trim()}`;
+    if (!tags.includes(newTag)) {
+      setTags([...tags, newTag]);
+    }
+    setTagInput('');
+  }
+};
+
   
 
   return (
@@ -72,12 +86,20 @@ const JournalForm = () => {
       <Input name="title" placeholder="Title" value={formData.title} onChange={handleChange} required />
       <Textarea name="content" placeholder="Write your experience..." value={formData.content} onChange={handleChange} rows={6} required />
       <Input name="location" placeholder="Type your location here..." value={formData.location} onChange={handleChange} />
-      <Input name="tags" placeholder="Enter tags comma separated..." value={formData.tags} onChange={handleChange} />
-      <div className="flex gap-2 flex-wrap">
-        {formData.tags.split(',').map((tag, idx) => (
-          <Badge key={idx} variant="outline" className="bg-muted/50">{tag.trim()}</Badge>
-        ))}
-      </div>
+      <Input
+  name="tagInput"
+  placeholder="Type a tag and press Enter..."
+  value={tagInput}
+  onChange={(e) => setTagInput(e.target.value)}
+  onKeyDown={handleTagKeyDown}
+/>
+
+      <div className="flex flex-wrap gap-2">
+  {tags.map((tag, idx) => (
+    <Badge key={idx} variant="outline" className="bg-muted/50">{tag}</Badge>
+  ))}
+</div>
+
       <div>
             <label className="block mb-1 text-sm font-medium">Upload Avatar</label>
             <Input type="file" accept="image/*" onChange={handleImageChange} />
