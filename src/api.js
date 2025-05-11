@@ -202,13 +202,38 @@ export const getJournals = async (userId) => {
 
 
 // POST a new journal
-export const createJournal = async (journalData) => {
+export const createJournal = async (journalData, file) => {
   try {
-    const res = await axios.post(`${API_URL}/journals`, journalData, {
+    const formData = new FormData();
+
+    formData.append('title', journalData.title);
+    formData.append('content', journalData.content);
+    formData.append('location', journalData.location);
+    formData.append('tags', journalData.tags);
+    formData.append('author', JSON.stringify(journalData.author));
+    formData.append('userId', journalData.userId);
+    formData.append('date', journalData.date);
+
+    /*title: formData.title,
+      content: formData.content,
+      location: formData.location,
+      tags: formData.tags.split(',').map(tag => tag.trim()),  
+      author: { 
+        name: user?.name,
+        avatar: user?.profile?.avatar
+      },  
+      userId: user?._id,  
+      date: new Date(),  */
+    if (file) {
+      formData.append('imageUrl', file);
+    }
+
+    const res = await axios.post(`${API_URL}/journals`, formData, {
       headers: {
-        "Content-Type": "application/json"
+        'Content-Type': 'multipart/form-data',
       },
     });
+
     return res.data;
   } catch (err) {
     console.error("Error creating journal:", err);
@@ -216,13 +241,8 @@ export const createJournal = async (journalData) => {
   }
 };
 
-
-
-
 //update an existing journal
 export const updateJournal = async (id, updatedData) => {
- 
-
   try {
     const res = await axios.put(`${API_URL}/journals/${id}`, updatedData
     );

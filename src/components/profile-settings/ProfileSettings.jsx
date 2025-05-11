@@ -66,34 +66,20 @@ const ProfileSettings = () => {
         setImagePreview(URL.createObjectURL(file));
     };
 
-    // const handleSubmit = async (e) => {
-    //         e.preventDefault();
-    //         setIsSaving(true);
-    
-    //         try {
-    //             await updateProfile(profileData); 
-    //             toast.success("Profile updated successfully!");
-    //         } catch (error) {
-    //             toast.error("Failed to update profile!");
-    //         } finally {
-    //             setIsSaving(false); 
-    //         }
-    // }
-
     const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSaving(true);
+        e.preventDefault();
+        setIsSaving(true);
 
-    try {
-        await updateProfile(profileData, file);
-        await dispatch(fetchUser());
-        toast.success('Profile updated successfully!');
-    } catch (error) {
-        console.error(error);
-        toast.error('Failed to update profile');
-    } finally {
-        setIsSaving(false);
-    }
+        try {
+            await updateProfile(profileData, file);
+            await dispatch(fetchUser());
+            toast.success('Profile updated successfully!');
+        } catch (error) {
+            console.error(error);
+            toast.error('Failed to update profile');
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     

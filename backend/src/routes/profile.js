@@ -1,6 +1,4 @@
 import express from "express";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import path from 'path';
 import multer from "multer";
 import User from "../models/User.js";

@@ -10,6 +10,7 @@ const JournalDetailPage = () => {
   const userId = useSelector((state) => state.auth.user._id);
   const [journal, setJournal] = useState(null);
   const [error, setError] = useState(false);
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
     
@@ -66,6 +67,15 @@ const fetchJournal = async () => {
 
       <div>
         <h1 className="text-3xl font-extrabold mb-2">{journal.title}</h1>
+        {journal.imageUrl && (
+          <div className="w-full h-80 flex items-center justify-center rounded-t-lg">
+            <img 
+              src={backendUrl + journal.imageUrl} 
+              alt={journal.imageUrl}
+              className="max-h-full max-w-full object-contain scale-95"
+            />
+          </div>
+        )}
         <p className="text-sm text-muted-foreground mb-4">
           by <span className="font-medium">{journal.author?.name || "Unknown"}</span> •{" "}
           {new Date(journal.date).toLocaleDateString()}

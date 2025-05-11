@@ -18,30 +18,25 @@ const JournalForm = () => {
   });
   
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+  const [file, setFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState('');
 
-const handleChange = (e) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // const handleImageChange = (e) => {
-  //   const file = e.target.files[0];
-  //   if (!file) return;
-  //   const reader = new FileReader();
-  //   reader.onloadend = () => {
-  //     setFormData((prev) => ({
-  //       ...prev,
-  //       image: reader.result,
-  //       imagePreview: URL.createObjectURL(file),
-  //     }));
-  //   };
-  //   reader.readAsDataURL(file);
-  // };
+  const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        setFile(file);
+        setImagePreview(URL.createObjectURL(file));
+    };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  setIsSubmitting(true);
+    setIsSubmitting(true);
     const journalData = {
       title: formData.title,
       content: formData.content,
@@ -59,7 +54,7 @@ const handleChange = (e) => {
     console.log('Journal data to be submitted:', journalData);
   
     try {
-      await createJournal(journalData); 
+      await createJournal(journalData, file); 
       toast.success('your journal entry has been created successfully!');
       setFormData({ title: '', content: '', location: '', tags: ''});
     } catch (err) {
@@ -84,10 +79,16 @@ const handleChange = (e) => {
         ))}
       </div>
       <div>
-        {/* <label className="block mb-1 text-sm font-medium">Upload Image</label>
-        <Input type="file" accept="image/*" onChange={handleImageChange} />
-        {formData.imagePreview && <img src={formData.imagePreview} alt="Preview" className="mt-2 rounded-lg max-h-48 object-cover" />} */}
-      </div>
+            <label className="block mb-1 text-sm font-medium">Upload Avatar</label>
+            <Input type="file" accept="image/*" onChange={handleImageChange} />
+            {imagePreview && (
+                <img
+                    src={imagePreview}
+                    alt="Avatar Preview"
+                    className="mt-2 rounded-lg max-h-48 object-cover"
+                />
+            )}
+        </div>
       <Button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Saving...' : 'Save Journal'}</Button>
     </form>
   );

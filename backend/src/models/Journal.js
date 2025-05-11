@@ -6,7 +6,7 @@ const journalSchema = new mongoose.Schema({
   excerpt: { type: String },
   location: { type: String },
   tags: [{ type: String }],
-  //  imageUrl: { type:String },
+  imageUrl: { type:String },
   author: {
     name: { type: String },
     avatar: { type: String },

@@ -18,7 +18,7 @@ function JournalCard(props) {
         {imageUrl && (
           <div className="aspect-w-16 aspect-h-9 w-full overflow-hidden rounded-t-lg">
             <img 
-              src={imageUrl} 
+              src={backendUrl + imageUrl} 
               alt={title}
               className="h-48 w-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
             />

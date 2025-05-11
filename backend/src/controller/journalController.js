@@ -1,6 +1,7 @@
 import Journal from "../models/Journal.js";
 import mongoose from 'mongoose';
 import Connection from "../models/Connection.js";
+
 export const getAllJournals = async (req, res) => {
   const { userId } = req.query;
 
@@ -64,7 +65,9 @@ export const getJournalById = async (req, res) => {
 
 
 export const createJournal = async (req, res) => {
-  const { title, content, location, tags, author, userId, date } = req.body;
+  const { title, content, location, tags, author: authorStr, userId, date } = req.body;
+  const author = JSON.parse(authorStr);
+  const imageUrl = req.file ? `/uploads/${req.file.filename}` : "";
 
   if (!title || !content || !userId || !author?.name) {
     return res.status(400).json({ message: 'Missing required fields' });
@@ -92,6 +95,7 @@ export const createJournal = async (req, res) => {
       author,
       userId,
       date,
+      imageUrl,
       sharedWith: roammateIds,
     });
 
@@ -102,6 +106,7 @@ export const createJournal = async (req, res) => {
     res.status(500).json({ message: 'Error creating journal' });
   }
 };
+
 export const deleteJournal = async (req, res) => {
   try {
     console.log("DELETE req.body:", req.body); 
