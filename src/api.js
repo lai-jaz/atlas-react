@@ -217,13 +217,14 @@ export const getRandomTip = async () => {
 //-----------------JOURNALS-----------------//
 
 // GET all journals for the logged-in user
-export const getJournals = async () => {
+export const getJournals = async (userId) => {
   try {
-    const res = await axios.get('http://localhost:3000/api/journals');
-    return res.data;
-  } catch (err) {
-    console.error('Error fetching journals:', err);
-    throw err;
+    const res = await fetch(`${API_URL}/journals?userId=${userId}`);
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching journals:", error);
+    throw error;
   }
 };
 
@@ -231,7 +232,7 @@ export const getJournals = async () => {
 // POST a new journal
 export const createJournal = async (journalData) => {
   try {
-    const res = await axios.post("http://localhost:3000/api/journals", journalData, {
+    const res = await axios.post(`${API_URL}/journals`, journalData, {
       headers: {
         "Content-Type": "application/json"
       },
@@ -246,50 +247,58 @@ export const createJournal = async (journalData) => {
 
 
 
-// // PUT (update) an existing journal
-// export const updateJournal = async (id, updatedData, token) => {
-//   if (!token) throw new Error("Authentication required");
+//update an existing journal
+export const updateJournal = async (id, updatedData) => {
+ 
 
-//   try {
-//     const res = await axios.put(`${API_URL}/journals/${id}`, updatedData, {
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//         'Content-Type': 'application/json',
-//       },
-//     });
-//     return res.data;
-//   } catch (err) {
-//     console.error("Error updating journal:", err.response || err);
-//     throw err;
-//   }
-// };
+  try {
+    const res = await axios.put(`${API_URL}/journals/${id}`, updatedData
+    );
+    return res.data;
+  } catch (err) {
+    console.error("Error updating journal:", err.response || err);
+    throw err;
+  }
+};
 
-// // DELETE a journal
-// export const deleteJournal = async (id, token) => {
-//   if (!token) throw new Error("Authentication required");
+//DELETE a journal
+export const deleteJournal = async (id, userId) => {
+  try {
+    const res = await axios.delete(`${API_URL}/journals/${id}`, {
+      data: { userId },
+    });
+    return res.data;
+  } catch (err) {
+    console.error("Error deleting journal:", err.response || err);
+    throw err;
+  }
+};
 
-//   try {
-//     const res = await axios.delete(`${API_URL}/journals/${id}`, {
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//       },
-//     });
-//     return res.data;
-//   } catch (err) {
-//     console.error("Error deleting journal:", err.response || err);
-//     throw err;
-//   }
-// };
 // GET a single journal by ID
 export const getJournalById = async (id) => {
   try {
-    const res = await axios.get(`http://localhost:3000/api/journals/${id}`);
+    const res = await axios.get(`${API_URL}/journals/${id}`);
     return res.data;
   } catch (err) {
     console.error(`Error fetching journal with ID ${id}:`, err);
     throw err;
   }
 };
+
+export const getMemories = async (userId, period) => {
+  try {
+    const res = await fetch(`${API_URL}/journals/memories?userId=${userId}&period=${period}`);
+    if (!res.ok) throw new Error("Failed to fetch memories");
+    return await res.json(); 
+  } catch (err) {
+    console.error("Fetch error:", err);
+    throw err;
+  }
+};
+
+
+
+
 
 //-----------------ROAMMATES (CONNECTIONS)-----------------//
 
@@ -474,4 +483,3 @@ export const removeConnectionById = async (connectionId, token) => {
     throw err;
   }
 };
-
