@@ -9,7 +9,7 @@ import Connection from '../models/Connection.js';
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
 
-// Authentication middleware
+
 const authenticate = async (req, res, next) => {
   try {
     const token = req.headers.authorization?.split(' ')[1];
@@ -23,7 +23,7 @@ const authenticate = async (req, res, next) => {
   }
 };
 
-// Check if users are connected
+
 const checkConnection = async (userId1, userId2) => {
   const connection = await Connection.findOne({
     $or: [
