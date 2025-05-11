@@ -7,7 +7,6 @@ import FriendRequest from "../models/FriendRequest.js";
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
 
-// Authentication middleware
 const authenticate = (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader) return res.status(401).json({ error: "Missing token" });
@@ -22,7 +21,7 @@ const authenticate = (req, res, next) => {
   }
 };
 
-// Get all users (for discovery)
+
 router.get("/all", authenticate, async (req, res) => {
   try {
     const currentUserId = req.userId;
@@ -31,8 +30,7 @@ router.get("/all", authenticate, async (req, res) => {
     const users = await User.find({ _id: { $ne: currentUserId } })
       .select("-password")
       .limit(20);
-    
-    // Get all connections involving the current user
+   
     const connections = await Connection.find({
       $or: [
         { requester: currentUserId },
@@ -40,7 +38,7 @@ router.get("/all", authenticate, async (req, res) => {
       ]
     });
     
-    // Map users with their connection status relative to current user
+   
     const usersWithStatus = users.map(user => {
       const userObj = user.toObject();
       
@@ -74,7 +72,6 @@ router.get("/all", authenticate, async (req, res) => {
   }
 });
 
-// Search for users
 router.get("/search", authenticate, async (req, res) => {
   try {
     const { query, searchType } = req.query;
@@ -82,16 +79,15 @@ router.get("/search", authenticate, async (req, res) => {
 
     let searchQuery = { _id: { $ne: currentUserId } }; // Exclude current user
 
-    // Build search query based on searchType
     if (query && query.trim()) {
       if (searchType === 'location') {
-        // Search by location
+     
         searchQuery["profile.location"] = { $regex: query, $options: "i" };
       } else if (searchType === 'interest') {
-        // Search by interest
+      
         searchQuery["profile.interests"] = { $regex: query, $options: "i" };
       } else {
-        // Default: search by name, username, email, location, or interests
+       
         searchQuery.$and = [
           { _id: { $ne: currentUserId } },
           {
@@ -107,10 +103,10 @@ router.get("/search", authenticate, async (req, res) => {
       }
     }
 
-    // Find users that match the query
+    
     const users = await User.find(searchQuery).select("-password");
 
-    // Get all connections involving the current user
+    
     const connections = await Connection.find({
       $or: [
         { requester: currentUserId },
@@ -118,11 +114,11 @@ router.get("/search", authenticate, async (req, res) => {
       ]
     });
 
-    // Map users with their connection status relative to current user
+   
     const usersWithStatus = users.map(user => {
       const userObj = user.toObject();
       
-      // Find if there's a connection between current user and this user
+     
       const connection = connections.find(conn => 
         (conn.requester.toString() === currentUserId && conn.recipient.toString() === user._id.toString()) ||
         (conn.recipient.toString() === currentUserId && conn.requester.toString() === user._id.toString())
@@ -152,12 +148,11 @@ router.get("/search", authenticate, async (req, res) => {
   }
 });
 
-// Get connected roammates
+
 router.get("/connected", authenticate, async (req, res) => {
   try {
     const currentUserId = req.userId;
-    
-    // Find all accepted connections where the current user is involved
+  
     const connections = await Connection.find({
       $or: [
         { requester: currentUserId, status: 'accepted' },
@@ -165,7 +160,6 @@ router.get("/connected", authenticate, async (req, res) => {
       ]
     });
     
-    // Extract the IDs of connected users and map them to their connection IDs
     const connectedUserMap = connections.reduce((map, conn) => {
       const otherUserId = conn.requester.toString() === currentUserId ? 
         conn.recipient : conn.requester;
@@ -175,12 +169,12 @@ router.get("/connected", authenticate, async (req, res) => {
     
     const connectedUserIds = Object.keys(connectedUserMap);
     
-    // Fetch the user details for connected users
+    
     const connectedUsers = await User.find({
       _id: { $in: connectedUserIds }
     }).select("-password");
     
-    // Add connectionStatus and connectionId to each user
+    
     const usersWithStatus = connectedUsers.map(user => {
       const userObj = user.toObject();
       userObj.connectionStatus = 'accepted';
@@ -195,7 +189,7 @@ router.get("/connected", authenticate, async (req, res) => {
   }
 });
 
-// Get pending connection requests
+
 router.get("/pending", authenticate, async (req, res) => {
   try {
     const currentUserId = req.userId;
@@ -213,19 +207,16 @@ router.get("/pending", authenticate, async (req, res) => {
   }
 });
 
-// Send connection request
 router.post("/request", authenticate, async (req, res) => {
   try {
     const { recipientId } = req.body;
     const requesterId = req.userId;
 
-    // Validate recipient exists
     const recipient = await User.findById(recipientId);
     if (!recipient) {
       return res.status(404).json({ error: "Recipient user not found" });
     }
 
-    // Check if a connection already exists
     const existingConnection = await Connection.findOne({
       $or: [
         { requester: requesterId, recipient: recipientId },
@@ -240,7 +231,6 @@ router.post("/request", authenticate, async (req, res) => {
       });
     }
 
-    // Create new connection request
     const newConnection = new Connection({
       requester: requesterId,
       recipient: recipientId,
@@ -255,20 +245,17 @@ router.post("/request", authenticate, async (req, res) => {
   }
 });
 
-// Respond to connection request
 router.put("/respond", authenticate, async (req, res) => {
   try {
     const { requestId, action } = req.body;
     const currentUserId = req.userId;
 
-    // Find the connection request
     const connectionRequest = await Connection.findById(requestId);
     
     if (!connectionRequest) {
       return res.status(404).json({ error: "Connection request not found" });
     }
 
-    // Verify the current user is the recipient
     if (connectionRequest.recipient.toString() !== currentUserId) {
       return res.status(403).json({ error: "Not authorized to respond to this request" });
     }
@@ -280,10 +267,7 @@ router.put("/respond", authenticate, async (req, res) => {
       // Update follower/following counts
       const requesterId = connectionRequest.requester;
       const recipientId = connectionRequest.recipient;
-      
-      // When A sends request to B and B accepts:
-      // A is following B, so A's following count increases
-      // B is followed by A, so B's followers count increases
+    
       await User.findByIdAndUpdate(requesterId, {
         $inc: { "profile.followingCount": 1 }
       });
@@ -291,13 +275,12 @@ router.put("/respond", authenticate, async (req, res) => {
       await User.findByIdAndUpdate(recipientId, {
         $inc: { "profile.followersCount": 1 }
       });
-      
-      // Create a FriendRequest record to track the relationship
+ 
       const friendRequest = new FriendRequest({
         requester: requesterId,
         recipient: recipientId,
         status: 'accepted',
-        type: 'follow' // The requester is following the recipient
+        type: 'follow' 
       });
       
       await friendRequest.save();
@@ -315,7 +298,6 @@ router.put("/respond", authenticate, async (req, res) => {
   }
 });
 
-// Get roammate suggestions
 router.get("/suggestions", authenticate, async (req, res) => {
   try {
     const currentUserId = req.userId;
@@ -333,23 +315,20 @@ router.get("/suggestions", authenticate, async (req, res) => {
         { recipient: currentUserId }
       ]
     });
-    
-    // Extract IDs of users that are already connected or have pending requests
+
     const connectedUserIds = connections.map(conn => {
       return conn.requester.toString() === currentUserId ? 
         conn.recipient.toString() : conn.requester.toString();
     });
     
-    // Add current user ID to excluded list
+  
     connectedUserIds.push(currentUserId);
     
-    // Find users with similar interests or location
     const userInterests = currentUser.profile?.interests ? currentUser.profile?.interests.split(',') : [];
     const userLocation = currentUser.profile?.location || "";
     
     let matchQuery = { _id: { $nin: connectedUserIds } };
     
-    // If user has interests, find users with matching interests
     if (userInterests.length > 0) {
       matchQuery.$or = [
         ...userInterests.map(interest => ({
@@ -358,32 +337,28 @@ router.get("/suggestions", authenticate, async (req, res) => {
 
       ];
       
-      // If user has location, add it as another matching criteria
+   
       if (userLocation) {
         matchQuery.$or.push({ "profile.location": { $regex: userLocation.split(',')[0], $options: "i" } });
       }
     } else if (userLocation) {
-      // If only location is available
+      
       matchQuery["profile.location"] = { $regex: userLocation.split(',')[0], $options: "i" };
     }
     
-    // Find matching users
     const suggestedUsers = await User.find(matchQuery)
       .select("-password")
       .limit(10);
     
-    // Calculate relevance score for each user
     const usersWithRelevance = suggestedUsers.map(user => {
     const userObj = user.toObject();
-      
-      // Count common interests
+ 
       const otherInterests = user.profile?.interests? user.profile.interests.split(',') : [];
 
       const commonInterests = userInterests.filter(interest =>
           otherInterests.includes(interest)
         ).length;
-      
-      // Check if location matches
+   
       const locationMatch = userLocation && user.profile?.location && 
         user.profile.location.includes(userLocation.split(',')[0]);
       
@@ -398,7 +373,7 @@ router.get("/suggestions", authenticate, async (req, res) => {
       return userObj;
     });
     
-    // Sort by relevance score
+  
     usersWithRelevance.sort((a, b) => b.relevanceScore - a.relevanceScore);
     
     res.json(usersWithRelevance);
@@ -408,34 +383,29 @@ router.get("/suggestions", authenticate, async (req, res) => {
   }
 });
 
-// Add this route to handle connection removal
 router.delete("/connection/:connectionId", authenticate, async (req, res) => {
   try {
     const { connectionId } = req.params;
     const currentUserId = req.userId;
     
-    // Find the connection
+    
     const connection = await Connection.findById(connectionId);
     
     if (!connection) {
       return res.status(404).json({ error: "Connection not found" });
     }
     
-    // Verify the current user is part of this connection
+ 
     if (connection.requester.toString() !== currentUserId && 
         connection.recipient.toString() !== currentUserId) {
       return res.status(403).json({ error: "Not authorized to remove this connection" });
     }
     
-    // Only proceed if the connection was accepted
+    
     if (connection.status === 'accepted') {
       const requesterId = connection.requester.toString();
       const recipientId = connection.recipient.toString();
-      
-      // Decrement the appropriate counts based on the connection direction
-      // When A follows B and the connection is removed:
-      // A's following count decreases
-      // B's followers count decreases
+    
       await User.findOneAndUpdate(
         { _id: requesterId, "profile.followingCount": { $gt: 0 } },
         { $inc: { "profile.followingCount": -1 } }
@@ -445,15 +415,14 @@ router.delete("/connection/:connectionId", authenticate, async (req, res) => {
         { _id: recipientId, "profile.followersCount": { $gt: 0 } },
         { $inc: { "profile.followersCount": -1 } }
       );
-      
-      // Remove any FriendRequest records
+  
       await FriendRequest.deleteMany({
         requester: requesterId,
         recipient: recipientId
       });
     }
     
-    // Delete the connection
+
     await Connection.findByIdAndDelete(connectionId);
     
     res.json({ message: "Connection removed successfully" });
