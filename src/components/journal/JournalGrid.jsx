@@ -81,8 +81,8 @@ const JournalGrid = () => {
     switch (period) {
       case "year": return "You on this day last year";
       case "month": return "You on this day last month";
-      case "week": return "You on this day last week";
-      case "day": return "You earlier today";
+      case "7days": return "You on this day last week";
+      case "1day": return "You earlier today";
       default: return "Your memory";
     }
   };
