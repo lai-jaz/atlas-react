@@ -8,7 +8,6 @@ import tipRoutes from './routes/tips.js';
 import roammateRoutes from './routes/roammates.js';
 import journalRoutes from "./routes/journalRoutes.js";
 import profileRoutes from "./routes/profile.js";
-
 dotenv.config();
 const app = express();
 
