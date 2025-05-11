@@ -20,16 +20,17 @@ function JournalCard(props) {
     const [commentsCount, setCommentsCount] = useState(comments?.length || 0);
     const [showComments, setShowComments] = useState(false);
 
-    const handleLike = async () => {
-        try {
-          const token = localStorage.getItem('token');
-          const result = await toggleJournalLike(_id, token);
-          setIsLiked(result.liked);
-          setLikesCount(prev => result.liked ? prev + 1 : prev - 1);
-        } catch (error) {
-          console.error('Error toggling like:', error);
-        }
-      };
+  const handleLike = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const result = await toggleJournalLike(_id, token);
+    
+      setIsLiked(result.liked);
+      setLikesCount(prev => prev + 1);
+    } catch (error) {
+      console.error('Error toggling like:', error);
+    }
+  };
 
   return (
     <div className="journal-card group animate-enter">
@@ -98,10 +99,6 @@ function JournalCard(props) {
     <p className="text-xs text-muted-foreground">No tags available</p>
   )}
 </div>
-
-
-
-
           <div className="flex items-center justify-between mt-2 pt-2 border-t">
             <div className="flex items-center space-x-3">
               <Button 
